@@ -142,9 +142,19 @@ namespace CSharpSimulation
 		private static int wildInLineMultiplier = 0;
 
 		/**
+		 * If scatter win is presented on the screen.
+		 */
+		private static int scatterMultiplier = 1;
+
+		/**
 		 * Total bet in single base game spin.
 		 */
-		private static int totalBet = lines.Length;
+		private static int singleLineBet = 1;
+
+		/**
+		 * Total bet in single base game spin.
+		 */
+		private static int totalBet = singleLineBet * lines.Length;
 
 		/**
 		 * Free spins to be played.
@@ -317,7 +327,49 @@ namespace CSharpSimulation
 				view[i][2] = reels[i][d];
 			}
 		}
-		
+
+		/**
+		 * Calculate win in particular line.
+		 *
+		 * @param line Single line.
+		 *
+		 * @return Calculated win.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 13 Jul 2014
+		 */
+		private static int[] wildLineWin(int[] line) {
+			int []values = {11, 0, 0};
+
+			/*
+			 * If there is no leading wild there is no wild win.
+			 */
+			if(line[0] != values[0]) {
+				return(values);
+			}
+
+			/*
+			 * Wild symbol passing to find first regular symbol.
+			 */
+			for (int i = 0; i < line.Length; i++) {
+				/*
+				 * First no wild symbol found.
+				 */
+				if (line[i] != values[0]) {
+					break;
+				}
+
+				values [1]++;
+			}
+
+			values[2] = singleLineBet * paytable[values[1]][values[0]];
+
+			return(values);
+		}
+					
 		/**
 		 * Calculate win in particular line.
 		 *
@@ -332,6 +384,8 @@ namespace CSharpSimulation
 		 * @date 13 Jul 2014
 		 */
 		private static int lineWin(int[] line) {
+			int []wildWin = wildLineWin(line);
+
 			/*
 			 * Line win without wild is multiplied by one.
 			 */
@@ -343,7 +397,7 @@ namespace CSharpSimulation
 			int symbol = line [0];
 			
 			/*
-			 * Wild wymbol passing to find first regular symbol.
+			 * Wild symbol passing to find first regular symbol.
 			 */
 			for (int i=0; i<line.Length; i++) {
 				/*
@@ -360,7 +414,7 @@ namespace CSharpSimulation
 				 */
 				wildInLineMultiplier = 2;
 			}
-			
+
 			/*
 			 * Wild symbol substitution. Other wild are artificial they are not part of the pay table.
 			 */
@@ -404,7 +458,12 @@ namespace CSharpSimulation
 				line[i] = -1;
 			}
 			
-			int win = paytable[number][symbol] * wildInLineMultiplier;
+			int win = singleLineBet * paytable[number][symbol] * wildInLineMultiplier;
+			if(win < wildWin[2]) {
+				symbol = wildWin[0];
+				number = wildWin[1];
+				win = wildWin[1];
+			}
 
 			/*
 			 * There is multiplier in free games mode.
@@ -486,7 +545,7 @@ namespace CSharpSimulation
 				}
 			}
 
-			int win = paytable[numberOfScatters][12]*totalBet;
+			int win = paytable[numberOfScatters][12]*totalBet*scatterMultiplier;
 
 			if(win > 0 && freeGamesNumber==0) {
 				baseSymbolMoney[numberOfScatters][12] += win;
@@ -571,7 +630,7 @@ namespace CSharpSimulation
 			}
 			
 			/*
-			 * Count base game hit rate.
+			 * Count free games hit rate.
 			 */
 			if(win > 0) {
 				freeGamesHitRate++;
@@ -841,12 +900,14 @@ namespace CSharpSimulation
 			Console.WriteLine ("Free Game RTP:\t" + ((double)freeMoney / (double)lostMoney) + "\t\t" + (100.0D * (double)freeMoney / (double)lostMoney) + "%");
 			Console.WriteLine ();
 			Console.WriteLine ("Hit Frequency in Base Game:\t" + ((double)baseGameHitRate / (double)totalNumberOfGames) + "\t\t" + (100.0D * (double)baseGameHitRate / (double)totalNumberOfGames) + "%");
-			Console.WriteLine ("Hit Frequency into Free Game:\t" + ((double)totalNumberOfFreeGameStarts / (double)totalNumberOfGames) + "\t\t" + (100.0D * (double)(totalNumberOfFreeGameStarts+totalNumberOfFreeGameRestarts) / (double)totalNumberOfGames) + "%");
+			Console.WriteLine ("Hit Frequency in Free Game:\t" + ((double)freeGamesHitRate / (double)totalNumberOfFreeGames) + "\t\t" + (100.0D * (double)freeGamesHitRate / (double)totalNumberOfFreeGames) + "%");
+			Console.WriteLine ("Hit Frequency Base Game into Free Game:\t" + ((double)totalNumberOfFreeGameStarts / (double)totalNumberOfGames) + "\t\t" + (100.0D * (double)(totalNumberOfFreeGameStarts) / (double)totalNumberOfGames) + "%");
+			Console.WriteLine ("Hit Frequency Free Game into Free Game:\t" + ((double)totalNumberOfFreeGameRestarts / (double)totalNumberOfFreeGameStarts) + "\t\t" + (100.0D * (double)(totalNumberOfFreeGameRestarts) / (double)totalNumberOfFreeGameStarts) + "%");
 			Console.WriteLine ();
 			Console.WriteLine ("Max Win in Base Game:\t" + baseMaxWin);
 			Console.WriteLine ("Max Win in Free Game:\t" + freeMaxWin);
 			
-			/*
+			Console.WriteLine ();
 			Console.WriteLine ();
 			Console.WriteLine ("Base Game Symbols RTP:");
 			Console.Write ("\t");
@@ -904,7 +965,6 @@ namespace CSharpSimulation
 				}
 				Console.WriteLine ();
 			}
-			/**/
 		}
 		
 		/**
