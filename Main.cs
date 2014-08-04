@@ -547,6 +547,10 @@ namespace CSharpSimulation
 
 			int win = paytable[numberOfScatters][12]*totalBet*scatterMultiplier;
 
+			if(freeGamesNumber>0) {
+				win *= freeGamesMultiplier;
+			}
+
 			if(win > 0 && freeGamesNumber==0) {
 				baseSymbolMoney[numberOfScatters][12] += win;
 				baseGameSymbolsHitRate[numberOfScatters][12]++;
