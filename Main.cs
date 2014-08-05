@@ -121,6 +121,11 @@ namespace CSharpSimulation
 		};
 
 		/**
+		 * Use reels stops in brute force combinations generation.
+		 */
+		private static int[] reelsStops = new int[]{0, 0, 0, 0, 0};
+
+		/**
 		 * Current visible symbols on the screen.
 		 */
 		private static int[][] view = {
@@ -160,7 +165,6 @@ namespace CSharpSimulation
 		 * Free spins to be played.
 		 */
 		private static int freeGamesNumber = 0;
-
 
 		/**
 		 * Total amount of won money.
@@ -238,6 +242,11 @@ namespace CSharpSimulation
 		private static bool wildsOff = false;
 
 		/**
+		 * Brute force all winning combinations in base game only flag.
+		 */
+		private static bool bruteForce = false;
+
+		/**
 		 * Symbols win hit rate in base game.
 		 */
 		private static long[][] baseSymbolMoney = {
@@ -296,6 +305,29 @@ namespace CSharpSimulation
 		 */
 		static MainClass() {
 		}
+		
+		/**
+		 * Single reels spin to fill view with symbols.
+		 *
+		 * @param reels Reels strips.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 06 Aug 2014
+		 */
+		private static void nextCombination(int[] reelsStops) {
+			reelsStops [0] += 1;
+			for(int i=0; i<reelsStops.Length; i++) {
+				if(reelsStops[i]>=baseReels[i].Length) {
+					reelsStops [i] = 0;
+					if (i < reelsStops.Length - 1) {
+						reelsStops [i + 1] += 1;
+					}
+				}
+			}
+		}
 
 		/**
 		 * Single reels spin to fill view with symbols.
@@ -309,10 +341,16 @@ namespace CSharpSimulation
 		 * @date 13 Jul 2014
 		 */
 		private static void spin(int[][] reels) {
-			for (int i = 0; i < view.Length && i < reels.Length; i++) {
-				int r = prng.Next(reels[i].Length);
-				int u = r - 1;
-				int d = r + 1;
+			for (int i = 0, r, u, d; i < view.Length && i < reels.Length; i++) {
+				if (bruteForce == true) {
+					r = reelsStops [i];
+					u = r - 1;
+					d = r + 1;
+				} else {
+					r = prng.Next (reels [i].Length);
+					u = r - 1;
+					d = r + 1;
+				}
 
 				if (u < 0) {
 					u = reels[i].Length - 1;
@@ -572,6 +610,14 @@ namespace CSharpSimulation
 		 * @date 13 Jul 2014
 		 */
 		private static void freeGamesSetup() {
+			if (bruteForce == true) {
+				return;
+			}
+
+			if(freeOff == true) {
+				return;
+			}
+
 			int numberOfScatters = 0;
 			for (int i = 0; i < view.Length; i++) {
 				for (int j = 0; j < view[i].Length; j++) {
@@ -607,6 +653,10 @@ namespace CSharpSimulation
 		 * @date 13 Jul 2014
 		 */
 		private static void singleFreeGame() {
+			if (bruteForce == true) {
+				return;
+			}
+
 			if(freeOff == true) {
 				return;
 			}
@@ -655,6 +705,9 @@ namespace CSharpSimulation
 			 * Spin reels.
 			 */
 			spin( baseReels );
+			if (bruteForce == true) {
+				nextCombination (reelsStops);
+			}
 
 			freeGamesSetup();
 
@@ -732,6 +785,7 @@ namespace CSharpSimulation
 			Console.WriteLine( "*                                                                             *" );
 			Console.WriteLine( "* -freeoff        Switch off free spins.                                      *" );
 			Console.WriteLine( "* -wildsoff       Switch off wilds.                                           *" );
+			Console.WriteLine( "* -bruteforce     Switch on brute force only for the base game.               *" );
 			Console.WriteLine( "*                                                                             *" );
 			Console.WriteLine( "* -verify         Print input data structures.                                *" );
 			Console.WriteLine( "*                                                                             *" );
@@ -1090,6 +1144,10 @@ namespace CSharpSimulation
 					wildsOff = true;
 				}
 
+				if(args.Length > 0 && args[a].Contains("--bruteforce")) {
+					bruteForce = true;
+				}
+
 				if(args.Length > 0 && args[a].Contains("-verify")) {
 					printDataStructures();
 					Environment.Exit(0);
@@ -1105,6 +1163,17 @@ namespace CSharpSimulation
 					printHelp();
 					Console.WriteLine();
 					Environment.Exit(0);
+				}
+			}
+
+			/*
+			 * Calculate all combinations in base game.
+			 */
+			if (bruteForce == true) {
+				reelsStops = new int[]{0, 0, 0, 0, 0};
+				numberOfSimulations = 1;
+				for (int i=0; i<baseReels.Length; i++) {
+					numberOfSimulations *= baseReels [i].Length;
 				}
 			}
 
