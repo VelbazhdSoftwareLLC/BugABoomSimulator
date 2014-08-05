@@ -1144,7 +1144,7 @@ namespace CSharpSimulation
 					wildsOff = true;
 				}
 
-				if(args.Length > 0 && args[a].Contains("--bruteforce")) {
+				if(args.Length > 0 && args[a].Contains("-bruteforce")) {
 					bruteForce = true;
 				}
 
