@@ -441,16 +441,24 @@ namespace CSharpSimulation
 				/*
 				 * First no wild symbol found.
 				 */
-				if(symbol != 11) {
+				if(line[i] != 11) {
+					if(line[i] != 12) {
+						symbol = line [i];
+					}
 					break;
 				}
-
-				symbol = line [i];
 
 				/*
 				 * Line win with wild is multiplied by two.
 				 */
-				wildInLineMultiplier = 2;
+				if (i < line.Length - 1) {
+					wildInLineMultiplier = 2;
+				} else if (i == line.Length - 1) {
+					/*
+					 * Line win with five wilds is multiplied by one.
+					 */
+					wildInLineMultiplier = 1;
+				}
 			}
 
 			/*
@@ -468,13 +476,6 @@ namespace CSharpSimulation
 					 */
 					wildInLineMultiplier = 2;
 				}
-			}
-
-			/*
-			 * Line win with five wilds is multiplied by one.
-			 */
-			if(symbol == 11) {
-				wildInLineMultiplier = 1;
 			}
 
 			/*
@@ -981,6 +982,20 @@ namespace CSharpSimulation
 				Console.WriteLine ();
 			}
 			Console.WriteLine ();
+			Console.WriteLine ("Base Game Symbols Hit Rate:");
+			Console.Write ("\t");
+			for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+				Console.Write ("" + i + "of\t");
+			}
+			Console.WriteLine ();
+			for (int j=0; j<baseGameSymbolsHitRate[0].Length; j++) {
+				Console.Write (symbols[ j ] + "\t");
+				for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+					Console.Write ((double)baseGameSymbolsHitRate [i] [j] + "\t");
+				}
+				Console.WriteLine ();
+			}
+			Console.WriteLine ();
 			Console.WriteLine ("Base Game Symbols Hit Frequency:");
 			Console.Write ("\t");
 			for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
@@ -1020,6 +1035,20 @@ namespace CSharpSimulation
 				Console.Write (symbols[ j ] + "\t");
 				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)freeGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames + "\t");
+				}
+				Console.WriteLine ();
+			}
+			Console.WriteLine ();
+			Console.WriteLine ("Free Games Symbols Hit Rate:");
+			Console.Write ("\t");
+			for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+				Console.Write ("" + i + "of\t");
+			}
+			Console.WriteLine ();
+			for (int j=0; j<freeGameSymbolsHitRate[0].Length; j++) {
+				Console.Write (symbols[ j ] + "\t");
+				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+					Console.Write ((double)freeGameSymbolsHitRate [i] [j] + "\t");
 				}
 				Console.WriteLine ();
 			}
