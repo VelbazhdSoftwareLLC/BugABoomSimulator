@@ -44,7 +44,7 @@ namespace CSharpSimulation
 		/**
 		 * List of symbols names.
 		 */
-		private static String[] symbols = {
+		private static String[] symbolsNames = {
 			"SHIRT   ",
 			"SPEAKER ",
 			"MIC     ",
@@ -343,22 +343,17 @@ namespace CSharpSimulation
 		private static void spin(int[][] reels) {
 			for (int i = 0, r, u, d; i < view.Length && i < reels.Length; i++) {
 				if (bruteForce == true) {
-					r = reelsStops [i];
-					u = r - 1;
-					d = r + 1;
+					u = reelsStops [i];
+					r = u + 1;
+					d = u + 2;
 				} else {
-					r = prng.Next (reels [i].Length);
-					u = r - 1;
-					d = r + 1;
+					u = prng.Next (reels [i].Length);
+					r = u + 1;
+					d = u + 2;
 				}
 
-				if (u < 0) {
-					u = reels[i].Length - 1;
-				}
-
-				if (d >= reels[i].Length) {
-					d = 0;
-				}
+				r = r % reels[i].Length;
+				d = d % reels[i].Length;
 
 				view[i][0] = reels[i][u];
 				view[i][1] = reels[i][r];
@@ -448,6 +443,10 @@ namespace CSharpSimulation
 					break;
 				}
 
+				if (line [i] == 12) {
+					break;
+				}
+
 				/*
 				 * Line win with wild is multiplied by two.
 				 */
@@ -504,18 +503,11 @@ namespace CSharpSimulation
 				win = wildWin[1];
 			}
 
-			/*
-			 * There is multiplier in free games mode.
-			 */
-			if(freeGamesNumber > 0) {
-				win *= freeGamesMultiplier;
-			}
-
 			if(win > 0 && freeGamesNumber==0) {
 				baseSymbolMoney[number][symbol] += win;
 				baseGameSymbolsHitRate[number][symbol]++;
 			} else if (win > 0 && freeGamesNumber>0) {
-				freeSymbolMoney[number][symbol] += win;
+				freeSymbolMoney[number][symbol] += win*freeGamesMultiplier;
 				freeGameSymbolsHitRate[number][symbol]++;
 			}
 
@@ -574,7 +566,7 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static int scatterWin() {
+		private static int scatterWin(int[][] view) {
 			int numberOfScatters = 0;
 			for (int i = 0; i < view.Length; i++) {
 				for (int j = 0; j < view[i].Length; j++) {
@@ -586,15 +578,11 @@ namespace CSharpSimulation
 
 			int win = paytable[numberOfScatters][12]*totalBet*scatterMultiplier;
 
-			if(freeGamesNumber>0) {
-				win *= freeGamesMultiplier;
-			}
-
 			if(win > 0 && freeGamesNumber==0) {
 				baseSymbolMoney[numberOfScatters][12] += win;
 				baseGameSymbolsHitRate[numberOfScatters][12]++;
 			} else if (win > 0 && freeGamesNumber>0) {
-				freeSymbolMoney[numberOfScatters][12] += win;
+				freeSymbolMoney[numberOfScatters][12] += win*freeGamesMultiplier;
 				freeGameSymbolsHitRate[numberOfScatters][12]++;
 			}
 
@@ -668,12 +656,11 @@ namespace CSharpSimulation
 			 */
 			spin( freeReels );
 
-			freeGamesSetup();
-
 			/*
 			 * Win accumulated by lines.
 			 */
-			int win = linesWin (view) + scatterWin();
+			int win = linesWin (view) + scatterWin(view);
+			win *= freeGamesMultiplier;
 
 			/*
 			 * Add win to the statistics.
@@ -690,6 +677,11 @@ namespace CSharpSimulation
 			if(win > 0) {
 				freeGamesHitRate++;
 			}
+
+			/*
+			 * Check for free games.
+			 */
+			freeGamesSetup();
 		}
 
 		/**
@@ -710,12 +702,10 @@ namespace CSharpSimulation
 				nextCombination (reelsStops);
 			}
 
-			freeGamesSetup();
-
 			/*
 			 * Win accumulated by lines.
 			 */
-			int win = linesWin (view) + scatterWin();
+			int win = linesWin (view) + scatterWin(view);
 
 			/*
 			 * Add win to the statistics.
@@ -732,6 +722,11 @@ namespace CSharpSimulation
 			if(win > 0) {
 				baseGameHitRate++;
 			}
+
+			/*
+			 * Check for free games.
+			 */
+			freeGamesSetup();
 
 			/*
 			 * Play all free games.
@@ -809,7 +804,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine();
 			for(int j=0; j<paytable[0].Length; j++) {
-				Console.Write(symbols[j] + "\t");
+				Console.Write(symbolsNames[j] + "\t");
 				for(int i=0; i<paytable.Length; i++) {
 					Console.Write(paytable[i][j] + "\t");
 				}
@@ -832,7 +827,7 @@ namespace CSharpSimulation
 					if(j % 10 == 0) {
 						Console.WriteLine();
 					}
-					Console.Write(symbols[ baseReels[i][j] ] + " ");
+					Console.Write(symbolsNames[ baseReels[i][j] ] + " ");
 				}
 				Console.WriteLine();
 			}
@@ -844,7 +839,7 @@ namespace CSharpSimulation
 					if(j % 10 == 0) {
 						Console.WriteLine();
 					}
-					Console.Write(symbols[ freeReels[i][j] ] + " ");
+					Console.Write(symbolsNames[ freeReels[i][j] ] + " ");
 				}
 				Console.WriteLine();
 			}
@@ -869,7 +864,7 @@ namespace CSharpSimulation
 				}
 				Console.WriteLine();
 				for(int j=0; j<counters[0].Length; j++) {
-					Console.Write(symbols[ j ] + "\t");
+					Console.Write(symbolsNames[ j ] + "\t");
 					for(int i=0; i<counters.Length; i++) {
 						Console.Write(counters[i][j] + "\t");
 					}
@@ -913,7 +908,7 @@ namespace CSharpSimulation
 				}
 				Console.WriteLine();
 				for(int j=0; j<counters[0].Length; j++) {
-					Console.Write(symbols[ j ] + "\t");
+					Console.Write(symbolsNames[ j ] + "\t");
 					for(int i=0; i<counters.Length; i++) {
 						Console.Write(counters[i][j] + "\t");
 					}
@@ -975,7 +970,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<baseSymbolMoney[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<baseSymbolMoney.Length; i++) {
 					Console.Write ((double)baseSymbolMoney [i] [j] / (double)lostMoney + "\t");
 				}
@@ -989,7 +984,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<baseGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)baseGameSymbolsHitRate [i] [j] + "\t");
 				}
@@ -1003,7 +998,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<baseGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)baseGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames + "\t");
 				}
@@ -1018,7 +1013,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<freeSymbolMoney[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<freeSymbolMoney.Length; i++) {
 					Console.Write ((double)freeSymbolMoney [i] [j] / (double)lostMoney + "\t");
 				}
@@ -1032,7 +1027,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<freeGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)freeGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames + "\t");
 				}
@@ -1046,7 +1041,7 @@ namespace CSharpSimulation
 			}
 			Console.WriteLine ();
 			for (int j=0; j<freeGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbols[ j ] + "\t");
+				Console.Write (symbolsNames[ j ] + "\t");
 				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)freeGameSymbolsHitRate [i] [j] + "\t");
 				}
@@ -1073,10 +1068,7 @@ namespace CSharpSimulation
 
 			for(int j=0; j<max; j++) {
 				for (int i=0; i<view.Length && j<view[i].Length; i++) {
-					if(view[i][j] < 10 && view[i][j]>=0) {
-						Console.Write(" ");
-					}
-					Console.Write(view[i][j] + " ");
+					Console.Write(symbolsNames[ view[i][j] ] + "   ");
 				}
 
 				Console.WriteLine();
@@ -1121,6 +1113,20 @@ namespace CSharpSimulation
 
 			long numberOfSimulations = 10000000L;
 			long progressPrintOnIteration = 10000000L;
+/*
+view = new int[][]{
+	new int[]{ 3, 11, 3 },
+	new int[]{ 4, 12, 4 },
+	new int[]{ 5, 8, 5 },
+	new int[]{ 6, 12, 6 },
+	new int[]{ 7, 9, 7 },
+};
+			Console.WriteLine(linesWin (view));
+			Console.WriteLine(scatterWin (view));
+			printView ();
+Console.ReadLine ();
+return;
+/**/
 
 			/*
 			 * Parse command line arguments.
@@ -1244,311 +1250,3 @@ namespace CSharpSimulation
 		}
 	}
 }
-
-//using System;
-//
-//namespace BruteForceRTP
-//{
-//	class MainClass
-//	{
-//
-//		private static String[] symbols = {
-//			"SHIRT   ",
-//			"SPEAKER ",
-//			"MIC     ",
-//			"AIRPLANE",
-//			"MONEY   ",
-//			"MAGAZINE",
-//			"DRUM    ",
-//			"BASS    ",
-//			"SOLO    ",
-//			"VOCAL   ",
-//			"POSTER  ",
-//			"WILD    ",
-//			"SCATTER ",
-//		};
-//
-//		private static ulong[][] paytable = {
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,2,2,2,10,2},
-//			new ulong[]{5,5,5,10,10,10,15,15,25,25,50,250,5},
-//			new ulong[]{25,25,25,50,50,50,75,75,125,125,250,2500,0},
-//			new ulong[]{125,125,125,250,250,250,500,500,750,750,1250,10000,0},
-//		};
-//		
-//		private static int[][] baseReels = {
-//			new int[]{0,4,11,1,3,2,5,9,0,4,2,7,8,0,5,2,6,10,0,5,1,3,9,4,2,7,8,0,5,2,6,9,0,5,2,4,10,0,5,1,7,9,2,5},
-//			new int[]{4,1,11,2,7,0,9,5,1,3,8,4,2,6,12,4,0,3,1,8,4,2,6,0,10,4,1,3,2,12,4,0,7,1,8,2,4,0,9,1,6,2,8,0},
-//			new int[]{1,7,11,5,1,7,8,6,0,3,12,4,1,6,9,5,2,7,10,1,3,2,8,1,3,0,9,5,1,3,10,6,0,3,8,7,1,6,12,3,2,5,9,3},
-//			new int[]{5,2,11,3,0,6,1,5,12,2,4,0,10,3,1,7,3,2,11,5,4,6,0,5,12,1,3,7,2,4,8,0,3,6,1,4,12,2,5,7,0,4,9,1},
-//			new int[]{7,0,11,4,6,1,9,5,10,2,7,3,8,0,4,9,1,6,5,10,2,8,3},
-//		};
-//
-//		private static int[][] freeReels = {
-//			new int[]{2,4,11,0,3,7,1,4,8,2,5,6,0,5,9,1,3,7,2,4,10,0,3,1,8,4,2,5,6,0,4,1,10,5,2,3,7,0,5,9,1,3,6},
-//			new int[]{4,2,11,0,5,2,12,1,7,0,9,2,3,0,12,2,4,0,5,8,2,6,0,12,2,7,1,3,10,6,0},
-//			new int[]{1,4,11,2,7,8,1,5,12,0,3,9,1,7,8,1,5,12,2,6,10,1,4,9,3,1,8,0,12,6,9},
-//			new int[]{6,4,11,2,7,3,9,1,6,5,12,0,4,10,2,3,8,1,7,5,12,0},
-//			new int[]{3,4,11,0,6,5,3,8,1,7,4,9,2,5,10,0,3,8,1,4,10,2,5,9},
-//		};
-//
-//		private static int[][] reels = null;
-//
-//		private static int[][] extendedReels = null;
-//
-//		private static ulong totalNumberOfCombinations = 0;
-//
-//		private static ulong[][] hits = {
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			new ulong[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//		};
-//
-//		private static ulong[] numberOfScatters = {0,0,0,0,0,0};
-//		
-//		public static void Main (string[] args){
-//			/*Parse input parameters.*/{
-//				for(int ar=0; ar<args.Length; ar++) {
-//					if(args.Length > 0 && args[ar].Contains("-base")) {
-//						reels = baseReels;
-//					}
-//					if(args.Length > 0 && args[ar].Contains("-free")) {
-//						reels = freeReels;
-//					}
-//				}
-//			}
-//			if(reels == null) {
-//				Environment.Exit(0);
-//			}
-//
-//			totalNumberOfCombinations = (ulong)reels[0].Length * (ulong)reels[1].Length * (ulong)reels[2].Length * (ulong)reels[3].Length * (ulong)reels[4].Length;
-//
-//			extendedReels = new int[reels.Length][];
-//			for(int i=0;i<reels.Length; i++) {
-//				extendedReels[i] = new int[reels[i].Length+2];
-//				for(int j=0; j<extendedReels[i].Length; j++) {
-//					extendedReels[i][j] = reels[i][j%reels[i].Length];
-//				}
-//			}
-//
-//			Console.WriteLine("Reels:");
-//			for(int i=0; i<reels.Length; i++) {
-//				for(int j=0; j<reels[i].Length; j++) {
-//					Console.Write(""+symbols[reels[i][j]] + "\t");
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Reels:");
-//			int[][] counters = {
-//				new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//				new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//				new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//				new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//				new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
-//			};
-//			for(int i=0; i<reels.Length; i++) {
-//				for(int j=0; j<reels[i].Length; j++) {
-//					counters[i][reels[i][j]]++;
-//				}
-//			}
-//			for(int j=0; j<counters[0].Length; j++) {
-//				Console.Write(symbols[j] + "\t");
-//				for(int i=0; i<counters.Length; i++) {
-//					Console.Write(counters[i][j] + "\t");
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			int a = -1;
-//			int b = -1;
-//			int c = -1;
-//			int d = -1;
-//			int e = -1;
-//
-//			int sa = 0;
-//			int sb = 0;
-//			int sc = 0;
-//			int sd = 0;
-//			int se = 0;
-//			
-//			int number1 = 0;
-//			int number2 = 0;
-//			int number = 0;
-//			int mul1 = 1;
-//			int mul2 = 1;
-//			int symbol1 = -1;
-//			int symbol2 = -1;
-//			int symbol = -1;
-//			for (e = 0; e < reels[4].Length; e++) {
-//				Console.WriteLine();
-//				Console.WriteLine((100.0D*e/reels[4].Length) + "%");
-//
-//				se = (extendedReels[4][e]==12?1:0)+(extendedReels[4][e+1]==12?1:0)+(extendedReels[4][e+2]==12?1:0);
-//
-//				for (d = 0; d < reels[3].Length; d++) {
-//					Console.Write("=");
-//
-//					sd = (extendedReels[3][d]==12?1:0)+(extendedReels[3][d+1]==12?1:0)+(extendedReels[3][d+2]==12?1:0);
-//					
-//					for (c = 0; c < reels[2].Length; c++) {
-//						sc = (extendedReels[2][c]==12?1:0)+(extendedReels[2][c+1]==12?1:0)+(extendedReels[2][c+2]==12?1:0);
-//						
-//						for (b = 0; b < reels[1].Length; b++) {
-//							sb = (extendedReels[1][b]==12?1:0)+(extendedReels[1][b+1]==12?1:0)+(extendedReels[1][b+2]==12?1:0);
-//							
-//							for (a = 0; a < reels[0].Length; a++) {
-//								sa = (extendedReels[0][a]==12?1:0)+(extendedReels[0][a+1]==12?1:0)+(extendedReels[0][a+2]==12?1:0);
-//								
-//								numberOfScatters[sa+sb+sc+sd+se]++;
-//
-//								/*
-//								 * First symbol is not wild.
-//								 */ 
-//								if(extendedReels[0][a+1] != 11) {
-//									mul1 = 1;
-//									number1 = 1;
-//									symbol1 = extendedReels [0] [a + 1];
-//									if(extendedReels[0][a+1] == extendedReels[1][b+1] || extendedReels[1][b+1]==11) {
-//										if (extendedReels [1] [b + 1] == 11) {
-//											mul1 = 2;
-//										}
-//										number1 = 2;
-//										if(extendedReels[0][a+1] == extendedReels[2][c+1] || extendedReels[2][c+1]==11) {
-//											if (extendedReels [1] [c + 1] == 11) {
-//												mul1 = 2;
-//											}
-//											number1 = 3;
-//											if(extendedReels[0][a+1] == extendedReels[3][d+1] || extendedReels[3][d+1]==11) {
-//												if (extendedReels [1] [d + 1] == 11) {
-//													mul1 = 2;
-//												}
-//												number1 = 4;
-//												if(extendedReels[0][a+1] == extendedReels[4][e+1] || extendedReels[4][e+1]==11) {
-//													if (extendedReels [1] [e + 1] == 11) {
-//														mul1 = 2;
-//													}
-//													number1 = 5;
-//												}
-//											}
-//										}
-//									}
-//									hits[number1][symbol1]++;
-//								}
-//
-//								/*
-//								 * First symbol is wild.
-//								 */ 
-//								if(extendedReels[0][a+1] == 11) {
-//									mul2 = 1;
-//									number2 = 1;
-//									symbol2 = extendedReels [0] [a + 1];
-//									if(symbol2 == extendedReels[1][b+1]) {
-//										number2 = 2;
-//										if(paytable[number2][symbol2] <= 2*paytable[number2+1][extendedReels[2][c+1]]) {
-//											symbol2 = extendedReels[2][c+1];
-//											number2 = 3;
-//											mul2 = 2;
-//										}
-//										if(symbol2 == extendedReels[2][c+1]) {
-//											number2 = 3;
-//											if(paytable[number2][symbol2] <= 2*paytable[number2+1][extendedReels[3][d+1]]) {
-//												symbol2 = extendedReels[3][d+1];
-//												number2 = 4;
-//												mul2 = 2;
-//											}
-//											if(symbol2 == extendedReels[3][d+1]) {
-//												number2 = 4;
-//												if(paytable[number2][symbol2] <= 2*paytable[number2+1][extendedReels[4][e+1]]) {
-//													symbol2 = extendedReels[4][e+1];
-//													number2 = 5;
-//													mul2 = 2;
-//												}
-//												if(symbol2 == extendedReels[4][e+1]) {
-//													number2 = 5;
-//													mul2 = 1;
-//												}
-//											}
-//										}
-//									}
-//
-//									hits[number2][symbol2]++;
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Symbols Combinations:");
-//			for(int i=0; i<hits.Length; i++) {
-//				for(int j=0; j<hits[i].Length; j++) {
-//					Console.Write( hits[i][j] + "\t" );
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Paytable:");
-//			for(int i=0; i<paytable.Length; i++) {
-//				for(int j=0; j<paytable[i].Length; j++) {
-//					Console.Write( paytable[i][j] + "\t" );
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Symbols Wins:");
-//			for(int i=0; i<paytable.Length&&i<hits.Length; i++) {
-//				for(int j=0; j<paytable[i].Length&&j<paytable[i].Length; j++) {
-//					Console.Write( (hits[i][j]*(ulong)paytable[i][j]) + "\t" );
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Symbols Frequencies:");
-//			for(int i=0; i<hits.Length; i++) {
-//				for(int j=0; j<hits[i].Length; j++) {
-//					Console.Write( (double)hits[i][j]/totalNumberOfCombinations + "\t" );
-//				}
-//				Console.WriteLine();
-//			}
-//
-//			Console.WriteLine();
-//			Console.WriteLine("Symbols RTP:");
-//			double rtp = 0.0;
-//			for(int i=0; i<paytable.Length&&i<hits.Length; i++) {
-//				for(int j=0; j<paytable[i].Length&&j<hits[i].Length; j++) {
-//					rtp += (double)hits[i][j]/totalNumberOfCombinations*(double)paytable[i][j];
-//					Console.Write( (double)hits[i][j]/totalNumberOfCombinations*(double)paytable[i][j] + "\t" );
-//				}
-//				Console.WriteLine();
-//			}
-//			Console.WriteLine();
-//			rtp += numberOfScatters[3] *  50.0D / totalNumberOfCombinations;
-//			rtp += numberOfScatters[4] * 100.0D / totalNumberOfCombinations;
-//			rtp += numberOfScatters[5] * 150.0D / totalNumberOfCombinations;
-//			
-//			Console.WriteLine();
-//			Console.WriteLine("Total Number of Combinations:");
-//			Console.WriteLine( totalNumberOfCombinations );
-//
-//			Console.WriteLine();
-//			Console.WriteLine("RTP:");
-//			Console.WriteLine( rtp );
-//			
-//			Console.WriteLine();
-//			Console.WriteLine("Scatters Hit Frequency:");
-//			for(int i=0; i<numberOfScatters.Length; i++) {
-//				Console.WriteLine(i + "\t" + numberOfScatters[i] + "\t" + (double)numberOfScatters[i]/totalNumberOfCombinations );
-//			}
-//		}
-//	}
-//}
