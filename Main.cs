@@ -500,7 +500,7 @@ namespace CSharpSimulation
 			if(win < wildWin[2]) {
 				symbol = wildWin[0];
 				number = wildWin[1];
-				win = wildWin[1];
+				win = wildWin[2];
 			}
 
 			if(win > 0 && freeGamesNumber==0) {
