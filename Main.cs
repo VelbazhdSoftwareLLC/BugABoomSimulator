@@ -1,6 +1,6 @@
 /*******************************************************************************
-* Bug A Boom Slot Simulation version 0.9.0                                     *
-* Copyrights (C) 2014 Velbazhd Software LLC                                    *
+* Bug A Boom Slot Simulation version 0.9.1                                     *
+* Copyrights (C) 2014-2021 Velbazhd Software LLC                               *
 *                                                                              *
 * developed by Todor Balabanov ( todor.balabanov@gmail.com )                   *
 * Sofia, Bulgaria                                                              *
@@ -21,30 +21,29 @@
 *******************************************************************************/
 
 using System;
-using System.Collections.Generic;
 
 namespace CSharpSimulation
 {
 	/**
-	 * Main application class.
-	 *
-	 * @author Todor Balabanov
-	 *
-	 * @email todor.balabanov@gmail.com
-	 *
-	 * @date 13 Jul 2014
-	 */
+	* Main application class.
+	*
+	* @author Todor Balabanov
+	*
+	* @email todor.balabanov@gmail.com
+	*
+	* @date 13 Jul 2014
+	*/
 	class MainClass
 	{
 		/**
 		 * Pseudo-random number generator.
 		 */
-		private static Random prng = new Random();
+		private static Random prng = new Random ();
 
 		/**
 		 * List of symbols names.
 		 */
-		private static String[] symbolsNames = {
+		private static String [] symbolsNames = {
 			"SHIRT   ",
 			"SPEAKER ",
 			"MIC     ",
@@ -63,7 +62,7 @@ namespace CSharpSimulation
 		/**
 		 * Slot game paytable.
 		 */
-		private static int[][] paytable = {
+		private static int [] [] paytable = {
 			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new int[]{0,0,0,0,0,0,0,0,2,2,2,10,2},
@@ -75,7 +74,7 @@ namespace CSharpSimulation
 		/**
 		 * Lines combinations.
 		 */
-		private static int[][] lines = {
+		private static int [] [] lines = {
 			new int[]{1,1,1,1,1},
 			new int[]{0,0,0,0,0},
 			new int[]{2,2,2,2,2},
@@ -101,7 +100,7 @@ namespace CSharpSimulation
 		/**
 		 * Stips in base game.
 		 */
-		private static int[][] baseReels = {
+		private static int [] [] baseReels = {
 			new int[]{0,4,11,1,3,2,5,9,0,4,2,7,8,0,5,2,6,10,0,5,1,3,9,4,2,7,8,0,5,2,6,9,0,5,2,4,10,0,5,1,7,9,2,5},
 			new int[]{4,1,11,2,7,0,9,5,1,3,8,4,2,6,12,4,0,3,1,8,4,2,6,0,10,4,1,3,2,12,4,0,7,1,8,2,4,0,9,1,6,2,8,0},
 			new int[]{1,7,11,5,1,7,8,6,0,3,12,4,1,6,9,5,2,7,10,1,3,2,8,1,3,0,9,5,1,3,10,6,0,3,8,7,1,6,12,3,2,5,9,3},
@@ -112,7 +111,7 @@ namespace CSharpSimulation
 		/**
 		 * Stips in free spins.
 		 */
-		private static int[][] freeReels = {
+		private static int [] [] freeReels = {
 			new int[]{2,4,11,0,3,7,1,4,8,2,5,6,0,5,9,1,3,7,2,4,10,0,3,1,8,4,2,5,6,0,4,1,10,5,2,3,7,0,5,9,1,3,6},
 			new int[]{4,2,11,0,5,2,12,1,7,0,9,2,3,0,12,2,4,0,5,8,2,6,0,12,2,7,1,3,10,6,0},
 			new int[]{1,4,11,2,7,8,1,5,12,0,3,9,1,7,8,1,5,12,2,6,10,1,4,9,3,1,8,0,12,6,9},
@@ -123,12 +122,12 @@ namespace CSharpSimulation
 		/**
 		 * Use reels stops in brute force combinations generation.
 		 */
-		private static int[] reelsStops = new int[]{0, 0, 0, 0, 0};
+		private static int [] reelsStops = new int [] { 0, 0, 0, 0, 0 };
 
 		/**
 		 * Current visible symbols on the screen.
 		 */
-		private static int[][] view = {
+		private static int [] [] view = {
 			new int[]{ -1, -1, -1 },
 			new int[]{ -1, -1, -1 },
 			new int[]{ -1, -1, -1 },
@@ -249,7 +248,7 @@ namespace CSharpSimulation
 		/**
 		 * Symbols win hit rate in base game.
 		 */
-		private static long[][] baseSymbolMoney = {
+		private static long [] [] baseSymbolMoney = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -261,7 +260,7 @@ namespace CSharpSimulation
 		/**
 		 * Symbols hit rate in base game.
 		 */
-		private static long[][] baseGameSymbolsHitRate = {
+		private static long [] [] baseGameSymbolsHitRate = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -273,7 +272,7 @@ namespace CSharpSimulation
 		/**
 		 * Symbols win hit rate in base game.
 		 */
-		private static long[][] freeSymbolMoney = {
+		private static long [] [] freeSymbolMoney = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -285,7 +284,7 @@ namespace CSharpSimulation
 		/**
 		 * Symbols hit rate in base game.
 		 */
-		private static long[][] freeGameSymbolsHitRate = {
+		private static long [] [] freeGameSymbolsHitRate = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -303,9 +302,10 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		static MainClass() {
+		static MainClass ()
+		{
 		}
-		
+
 		/**
 		 * Single reels spin to fill view with symbols.
 		 *
@@ -317,10 +317,11 @@ namespace CSharpSimulation
 		 *
 		 * @date 06 Aug 2014
 		 */
-		private static void nextCombination(int[] reelsStops) {
+		private static void nextCombination (int [] reelsStops)
+		{
 			reelsStops [0] += 1;
-			for(int i=0; i<reelsStops.Length; i++) {
-				if(reelsStops[i]>=baseReels[i].Length) {
+			for (int i = 0; i < reelsStops.Length; i++) {
+				if (reelsStops [i] >= baseReels [i].Length) {
 					reelsStops [i] = 0;
 					if (i < reelsStops.Length - 1) {
 						reelsStops [i + 1] += 1;
@@ -340,7 +341,8 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void spin(int[][] reels) {
+		private static void spin (int [] [] reels)
+		{
 			for (int i = 0, r, u, d; i < view.Length && i < reels.Length; i++) {
 				if (bruteForce == true) {
 					u = reelsStops [i];
@@ -352,12 +354,12 @@ namespace CSharpSimulation
 					d = u + 2;
 				}
 
-				r = r % reels[i].Length;
-				d = d % reels[i].Length;
+				r = r % reels [i].Length;
+				d = d % reels [i].Length;
 
-				view[i][0] = reels[i][u];
-				view[i][1] = reels[i][r];
-				view[i][2] = reels[i][d];
+				view [i] [0] = reels [i] [u];
+				view [i] [1] = reels [i] [r];
+				view [i] [2] = reels [i] [d];
 			}
 		}
 
@@ -374,14 +376,15 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static int[] wildLineWin(int[] line) {
-			int []values = {11, 0, 0};
+		private static int [] wildLineWin (int [] line)
+		{
+			int [] values = { 11, 0, 0 };
 
 			/*
 			 * If there is no leading wild there is no wild win.
 			 */
-			if(line[0] != values[0]) {
-				return(values);
+			if (line [0] != values [0]) {
+				return (values);
 			}
 
 			/*
@@ -391,16 +394,16 @@ namespace CSharpSimulation
 				/*
 				 * First no wild symbol found.
 				 */
-				if (line[i] != values[0]) {
+				if (line [i] != values [0]) {
 					break;
 				}
 
 				values [1]++;
 			}
 
-			values[2] = singleLineBet * paytable[values[1]][values[0]];
+			values [2] = singleLineBet * paytable [values [1]] [values [0]];
 
-			return(values);
+			return (values);
 		}
 
 		/**
@@ -416,8 +419,9 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static int lineWin(int[] line) {
-			int []wildWin = wildLineWin(line);
+		private static int lineWin (int [] line)
+		{
+			int [] wildWin = wildLineWin (line);
 
 			/*
 			 * Line win without wild is multiplied by one.
@@ -432,12 +436,12 @@ namespace CSharpSimulation
 			/*
 			 * Wild symbol passing to find first regular symbol.
 			 */
-			for (int i=0; i<line.Length; i++) {
+			for (int i = 0; i < line.Length; i++) {
 				/*
 				 * First no wild symbol found.
 				 */
-				if(line[i] != 11) {
-					if(line[i] != 12) {
+				if (line [i] != 11) {
+					if (line [i] != 12) {
 						symbol = line [i];
 					}
 					break;
@@ -463,12 +467,12 @@ namespace CSharpSimulation
 			/*
 			 * Wild symbol substitution. Other wild are artificial they are not part of the pay table.
 			 */
-			for (int i = 0; i<line.Length && wildsOff==false; i++) {
-				if (line[i] == 11) {
+			for (int i = 0; i < line.Length && wildsOff == false; i++) {
+				if (line [i] == 11) {
 					/*
 					 * Substitute wild with regular symbol.
 					 */
-					line[i] = symbol;
+					line [i] = symbol;
 
 					/*
 					 * Line win with wild is multiplied by two.
@@ -493,25 +497,25 @@ namespace CSharpSimulation
 			 * Cleare unused symbols.
 			 */
 			for (int i = number; i < line.Length; i++) {
-				line[i] = -1;
+				line [i] = -1;
 			}
 
-			int win = singleLineBet * paytable[number][symbol] * wildInLineMultiplier;
-			if(win < wildWin[2]) {
-				symbol = wildWin[0];
-				number = wildWin[1];
-				win = wildWin[2];
+			int win = singleLineBet * paytable [number] [symbol] * wildInLineMultiplier;
+			if (win < wildWin [2]) {
+				symbol = wildWin [0];
+				number = wildWin [1];
+				win = wildWin [2];
 			}
 
-			if(win > 0 && freeGamesNumber==0) {
-				baseSymbolMoney[number][symbol] += win;
-				baseGameSymbolsHitRate[number][symbol]++;
-			} else if (win > 0 && freeGamesNumber>0) {
-				freeSymbolMoney[number][symbol] += win*freeGamesMultiplier;
-				freeGameSymbolsHitRate[number][symbol]++;
+			if (win > 0 && freeGamesNumber == 0) {
+				baseSymbolMoney [number] [symbol] += win;
+				baseGameSymbolsHitRate [number] [symbol]++;
+			} else if (win > 0 && freeGamesNumber > 0) {
+				freeSymbolMoney [number] [symbol] += win * freeGamesMultiplier;
+				freeGameSymbolsHitRate [number] [symbol]++;
 			}
 
-			return( win );
+			return (win);
 		}
 
 		/**
@@ -527,14 +531,15 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static int linesWin (int[][] view) {
+		private static int linesWin (int [] [] view)
+		{
 			int win = 0;
 
 			/*
 			 * Check wins in all possible lines.
 			 */
 			for (int l = 0; l < lines.Length; l++) {
-				int[] line = { -1, -1, -1, -1, -1 };
+				int [] line = { -1, -1, -1, -1, -1 };
 
 				/*
 				 * Prepare line for combination check.
@@ -544,7 +549,7 @@ namespace CSharpSimulation
 					line [i] = view [i] [index];
 				}
 
-				int result = lineWin( line );
+				int result = lineWin (line);
 
 				/*
 				 * Accumulate line win.
@@ -552,7 +557,7 @@ namespace CSharpSimulation
 				win += result;
 			}
 
-			return( win );
+			return (win);
 		}
 
 		/**
@@ -566,27 +571,28 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static int scatterWin(int[][] view) {
+		private static int scatterWin (int [] [] view)
+		{
 			int numberOfScatters = 0;
 			for (int i = 0; i < view.Length; i++) {
-				for (int j = 0; j < view[i].Length; j++) {
-					if (view[i][j] == 12) {
+				for (int j = 0; j < view [i].Length; j++) {
+					if (view [i] [j] == 12) {
 						numberOfScatters++;
 					}
 				}
 			}
 
-			int win = paytable[numberOfScatters][12]*totalBet*scatterMultiplier;
+			int win = paytable [numberOfScatters] [12] * totalBet * scatterMultiplier;
 
-			if(win > 0 && freeGamesNumber==0) {
-				baseSymbolMoney[numberOfScatters][12] += win;
-				baseGameSymbolsHitRate[numberOfScatters][12]++;
-			} else if (win > 0 && freeGamesNumber>0) {
-				freeSymbolMoney[numberOfScatters][12] += win*freeGamesMultiplier;
-				freeGameSymbolsHitRate[numberOfScatters][12]++;
+			if (win > 0 && freeGamesNumber == 0) {
+				baseSymbolMoney [numberOfScatters] [12] += win;
+				baseGameSymbolsHitRate [numberOfScatters] [12]++;
+			} else if (win > 0 && freeGamesNumber > 0) {
+				freeSymbolMoney [numberOfScatters] [12] += win * freeGamesMultiplier;
+				freeGameSymbolsHitRate [numberOfScatters] [12]++;
 			}
 
-			return( win );
+			return (win);
 		}
 
 		/**
@@ -598,19 +604,20 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void freeGamesSetup() {
+		private static void freeGamesSetup ()
+		{
 			if (bruteForce == true) {
 				return;
 			}
 
-			if(freeOff == true) {
+			if (freeOff == true) {
 				return;
 			}
 
 			int numberOfScatters = 0;
 			for (int i = 0; i < view.Length; i++) {
-				for (int j = 0; j < view[i].Length; j++) {
-					if (view[i][j] == 12) {
+				for (int j = 0; j < view [i].Length; j++) {
+					if (view [i] [j] == 12) {
 						numberOfScatters++;
 					}
 				}
@@ -619,13 +626,13 @@ namespace CSharpSimulation
 			/*
 			 * In base game 3+ scatters turn into free spins.
 			 */
-			if(numberOfScatters<3 && freeGamesNumber==0) {
+			if (numberOfScatters < 3 && freeGamesNumber == 0) {
 				return;
-			} else if(numberOfScatters>=3 && freeGamesNumber==0) {
+			} else if (numberOfScatters >= 3 && freeGamesNumber == 0) {
 				freeGamesNumber = 15;
 				freeGamesMultiplier = 4;
 				totalNumberOfFreeGameStarts++;
-			} else if(numberOfScatters>=3 && freeGamesNumber>0) {
+			} else if (numberOfScatters >= 3 && freeGamesNumber > 0) {
 				freeGamesNumber += 15;
 				freeGamesMultiplier = 4;
 				totalNumberOfFreeGameRestarts++;
@@ -641,12 +648,13 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void singleFreeGame() {
+		private static void singleFreeGame ()
+		{
 			if (bruteForce == true) {
 				return;
 			}
 
-			if(freeOff == true) {
+			if (freeOff == true) {
 				return;
 			}
 
@@ -654,12 +662,12 @@ namespace CSharpSimulation
 			 * Spin reels.
 			 * In retriggered games from FS1 to FS2 and from FS2 to FS3. FS3 can not rettriger FS.
 			 */
-			spin( freeReels );
+			spin (freeReels);
 
 			/*
 			 * Win accumulated by lines.
 			 */
-			int win = linesWin (view) + scatterWin(view);
+			int win = linesWin (view) + scatterWin (view);
 			win *= freeGamesMultiplier;
 
 			/*
@@ -667,21 +675,21 @@ namespace CSharpSimulation
 			 */
 			freeMoney += win;
 			wonMoney += win;
-			if(freeMaxWin < win) {
+			if (freeMaxWin < win) {
 				freeMaxWin = win;
 			}
 
 			/*
 			 * Count free games hit rate.
 			 */
-			if(win > 0) {
+			if (win > 0) {
 				freeGamesHitRate++;
 			}
 
 			/*
 			 * Check for free games.
 			 */
-			freeGamesSetup();
+			freeGamesSetup ();
 		}
 
 		/**
@@ -693,11 +701,12 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void singleBaseGame() {
+		private static void singleBaseGame ()
+		{
 			/*
 			 * Spin reels.
 			 */
-			spin( baseReels );
+			spin (baseReels);
 			if (bruteForce == true) {
 				nextCombination (reelsStops);
 			}
@@ -705,36 +714,36 @@ namespace CSharpSimulation
 			/*
 			 * Win accumulated by lines.
 			 */
-			int win = linesWin (view) + scatterWin(view);
+			int win = linesWin (view) + scatterWin (view);
 
 			/*
 			 * Add win to the statistics.
 			 */
 			baseMoney += win;
 			wonMoney += win;
-			if(baseMaxWin < win) {
+			if (baseMaxWin < win) {
 				baseMaxWin = win;
 			}
 
 			/*
 			 * Count base game hit rate.
 			 */
-			if(win > 0) {
+			if (win > 0) {
 				baseGameHitRate++;
 			}
 
 			/*
 			 * Check for free games.
 			 */
-			freeGamesSetup();
+			freeGamesSetup ();
 
 			/*
 			 * Play all free games.
 			 */
-			while(freeGamesNumber > 0) {
+			while (freeGamesNumber > 0) {
 				totalNumberOfFreeGames++;
 
-				singleFreeGame();
+				singleFreeGame ();
 
 				freeGamesNumber--;
 			}
@@ -750,42 +759,43 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void printHelp () {
-			Console.WriteLine( "*******************************************************************************" );
-			Console.WriteLine( "* Bug A Boom Slot Simulation version 0.9.0                                     *" );
-			Console.WriteLine( "* Copyrights (C) 2014 Velbazhd Software LLC                                    *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* developed by Todor Balabanov ( todor.balabanov@gmail.com )                  *" );
-			Console.WriteLine( "* Sofia, Bulgaria                                                             *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* This program is free software: you can redistribute it and/or modify        *" );
-			Console.WriteLine( "* it under the terms of the GNU General Public License as published by        *" );
-			Console.WriteLine( "* the Free Software Foundation, either version 3 of the License, or           *" );
-			Console.WriteLine( "* (at your option) any later version.                                         *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* This program is distributed in the hope that it will be useful,             *" );
-			Console.WriteLine( "* but WITHOUT ANY WARRANTY; without even the implied warranty of              *" );
-			Console.WriteLine( "* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               *" );
-			Console.WriteLine( "* GNU General Public License for more details.                                *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* You should have received a copy of the GNU General Public License           *" );
-			Console.WriteLine( "* along with this program. If not, see <http://www.gnu.org/licenses/>.        *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "*******************************************************************************" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* -h              Help screen.                                                *" );
-			Console.WriteLine( "* -help           Help screen.                                                *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* -g<number>      Number of games (default 10 000 000).                       *" );
-			Console.WriteLine( "* -p<number>      Progress on each iteration number (default 10 000 000).     *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* -freeoff        Switch off free spins.                                      *" );
-			Console.WriteLine( "* -wildsoff       Switch off wilds.                                           *" );
-			Console.WriteLine( "* -bruteforce     Switch on brute force only for the base game.               *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "* -verify         Print input data structures.                                *" );
-			Console.WriteLine( "*                                                                             *" );
-			Console.WriteLine( "*******************************************************************************" );
+		private static void printHelp ()
+		{
+			Console.WriteLine ("*******************************************************************************");
+			Console.WriteLine ("* Bug A Boom Slot Simulation version 0.9.1                                    *");
+			Console.WriteLine ("* Copyrights (C) 2014-2021 Velbazhd Software LLC                              *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* developed by Todor Balabanov ( todor.balabanov@gmail.com )                  *");
+			Console.WriteLine ("* Sofia, Bulgaria                                                             *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* This program is free software: you can redistribute it and/or modify        *");
+			Console.WriteLine ("* it under the terms of the GNU General Public License as published by        *");
+			Console.WriteLine ("* the Free Software Foundation, either version 3 of the License, or           *");
+			Console.WriteLine ("* (at your option) any later version.                                         *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* This program is distributed in the hope that it will be useful,             *");
+			Console.WriteLine ("* but WITHOUT ANY WARRANTY; without even the implied warranty of              *");
+			Console.WriteLine ("* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               *");
+			Console.WriteLine ("* GNU General Public License for more details.                                *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* You should have received a copy of the GNU General Public License           *");
+			Console.WriteLine ("* along with this program. If not, see <http://www.gnu.org/licenses/>.        *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("*******************************************************************************");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -h              Help screen.                                                *");
+			Console.WriteLine ("* -help           Help screen.                                                *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -g<number>      Number of games (default 10 000 000).                       *");
+			Console.WriteLine ("* -p<number>      Progress on each iteration number (default 10 000 000).     *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -freeoff        Switch off free spins.                                      *");
+			Console.WriteLine ("* -wildsoff       Switch off wilds.                                           *");
+			Console.WriteLine ("* -bruteforce     Switch on brute force only for the base game.               *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -verify         Print input data structures.                                *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("*******************************************************************************");
 		}
 
 		/**
@@ -797,141 +807,144 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void printDataStructures() {
-			Console.WriteLine("Paytable:");
-			for(int i=0; i<paytable.Length; i++) {
-				Console.Write("\t" + i + " of");
+		private static void printDataStructures ()
+		{
+			Console.WriteLine ("Paytable:");
+			for (int i = 0; i < paytable.Length; i++) {
+				Console.Write ("\t" + i + " of");
 			}
-			Console.WriteLine();
-			for(int j=0; j<paytable[0].Length; j++) {
-				Console.Write(symbolsNames[j] + "\t");
-				for(int i=0; i<paytable.Length; i++) {
-					Console.Write(paytable[i][j] + "\t");
+			Console.WriteLine ();
+			for (int j = 0; j < paytable [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < paytable.Length; i++) {
+					Console.Write (paytable [i] [j] + "\t");
 				}
-				Console.WriteLine();
+				Console.WriteLine ();
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 
-			Console.WriteLine("Lines:");
-			for(int i=0; i<lines.Length; i++) {
-				for(int j=0; j<lines[0].Length; j++) {
-					Console.Write(lines[i][j] + " ");
+			Console.WriteLine ("Lines:");
+			for (int i = 0; i < lines.Length; i++) {
+				for (int j = 0; j < lines [0].Length; j++) {
+					Console.Write (lines [i] [j] + " ");
 				}
-				Console.WriteLine();
+				Console.WriteLine ();
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 
-			Console.WriteLine("Base Game Reels:");
-			for(int i=0; i<baseReels.Length; i++) {
-				for(int j=0; j<baseReels[i].Length; j++) {
-					if(j % 10 == 0) {
-						Console.WriteLine();
+			Console.WriteLine ("Base Game Reels:");
+			for (int i = 0; i < baseReels.Length; i++) {
+				for (int j = 0; j < baseReels [i].Length; j++) {
+					if (j % 10 == 0) {
+						Console.WriteLine ();
 					}
-					Console.Write(symbolsNames[ baseReels[i][j] ] + " ");
+					Console.Write (symbolsNames [baseReels [i] [j]] + " ");
 				}
-				Console.WriteLine();
+				Console.WriteLine ();
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 
-			Console.WriteLine("Free Games Reels:");
-			for(int i=0; i<freeReels.Length; i++) {
-				for(int j=0; j<freeReels[i].Length; j++) {
-					if(j % 10 == 0) {
-						Console.WriteLine();
+			Console.WriteLine ("Free Games Reels:");
+			for (int i = 0; i < freeReels.Length; i++) {
+				for (int j = 0; j < freeReels [i].Length; j++) {
+					if (j % 10 == 0) {
+						Console.WriteLine ();
 					}
-					Console.Write(symbolsNames[ freeReels[i][j] ] + " ");
+					Console.Write (symbolsNames [freeReels [i] [j]] + " ");
 				}
-				Console.WriteLine();
+				Console.WriteLine ();
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 
-			Console.WriteLine("Base Game Reels:");
-			/* Count symbols in reels. */ {
-				int[][] counters = {
+			Console.WriteLine ("Base Game Reels:");
+			/* Count symbols in reels. */
+			{
+				int [] [] counters = {
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 				};
-				for(int i=0; i<baseReels.Length; i++) {
-					for(int j=0; j<baseReels[i].Length; j++) {
-						counters[i][baseReels[i][j]]++;
+				for (int i = 0; i < baseReels.Length; i++) {
+					for (int j = 0; j < baseReels [i].Length; j++) {
+						counters [i] [baseReels [i] [j]]++;
 					}
 				}
-				for(int i=0; i<baseReels.Length; i++) {
-					Console.Write("\tReel " + (i+1));
+				for (int i = 0; i < baseReels.Length; i++) {
+					Console.Write ("\tReel " + (i + 1));
 				}
-				Console.WriteLine();
-				for(int j=0; j<counters[0].Length; j++) {
-					Console.Write(symbolsNames[ j ] + "\t");
-					for(int i=0; i<counters.Length; i++) {
-						Console.Write(counters[i][j] + "\t");
+				Console.WriteLine ();
+				for (int j = 0; j < counters [0].Length; j++) {
+					Console.Write (symbolsNames [j] + "\t");
+					for (int i = 0; i < counters.Length; i++) {
+						Console.Write (counters [i] [j] + "\t");
 					}
-					Console.WriteLine();
+					Console.WriteLine ();
 				}
-				Console.WriteLine("---------------------------------------------");
-				Console.Write("Total:\t");
+				Console.WriteLine ("---------------------------------------------");
+				Console.Write ("Total:\t");
 				long combinations = 1L;
-				for(int i=0; i<counters.Length; i++) {
+				for (int i = 0; i < counters.Length; i++) {
 					int sum = 0;
-					for(int j=0; j<counters[0].Length; j++) {
-						sum += counters[i][j];
+					for (int j = 0; j < counters [0].Length; j++) {
+						sum += counters [i] [j];
 					}
-					Console.Write(sum + "\t");
-					if(sum != 0) {
+					Console.Write (sum + "\t");
+					if (sum != 0) {
 						combinations *= sum;
 					}
 				}
-				Console.WriteLine();
-				Console.WriteLine("---------------------------------------------");
-				Console.WriteLine("Combinations:\t" + combinations);
+				Console.WriteLine ();
+				Console.WriteLine ("---------------------------------------------");
+				Console.WriteLine ("Combinations:\t" + combinations);
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 
-			Console.WriteLine("Free Games Reels:");
-			/* Count symbols in reels. */ {
-				int[][] counters = {
+			Console.WriteLine ("Free Games Reels:");
+			/* Count symbols in reels. */
+			{
+				int [] [] counters = {
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 					new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 				};
-				for(int i=0; i<freeReels.Length; i++) {
-					for(int j=0; j<freeReels[i].Length; j++) {
-						counters[i][freeReels[i][j]]++;
+				for (int i = 0; i < freeReels.Length; i++) {
+					for (int j = 0; j < freeReels [i].Length; j++) {
+						counters [i] [freeReels [i] [j]]++;
 					}
 				}
-				for(int i=0; i<freeReels.Length; i++) {
-					Console.Write("\tReel " + (i+1));
+				for (int i = 0; i < freeReels.Length; i++) {
+					Console.Write ("\tReel " + (i + 1));
 				}
-				Console.WriteLine();
-				for(int j=0; j<counters[0].Length; j++) {
-					Console.Write(symbolsNames[ j ] + "\t");
-					for(int i=0; i<counters.Length; i++) {
-						Console.Write(counters[i][j] + "\t");
+				Console.WriteLine ();
+				for (int j = 0; j < counters [0].Length; j++) {
+					Console.Write (symbolsNames [j] + "\t");
+					for (int i = 0; i < counters.Length; i++) {
+						Console.Write (counters [i] [j] + "\t");
 					}
-					Console.WriteLine();
+					Console.WriteLine ();
 				}
-				Console.WriteLine("---------------------------------------------");
-				Console.Write("Total:\t");
+				Console.WriteLine ("---------------------------------------------");
+				Console.Write ("Total:\t");
 				long combinations = 1L;
-				for(int i=0; i<counters.Length; i++) {
+				for (int i = 0; i < counters.Length; i++) {
 					int sum = 0;
-					for(int j=0; j<counters[0].Length; j++) {
-						sum += counters[i][j];
+					for (int j = 0; j < counters [0].Length; j++) {
+						sum += counters [i] [j];
 					}
-					Console.Write(sum + "\t");
-					if(sum != 0) {
+					Console.Write (sum + "\t");
+					if (sum != 0) {
 						combinations *= sum;
 					}
 				}
-				Console.WriteLine();
-				Console.WriteLine("---------------------------------------------");
-				Console.WriteLine("Combinations:\t" + combinations);
+				Console.WriteLine ();
+				Console.WriteLine ("---------------------------------------------");
+				Console.WriteLine ("Combinations:\t" + combinations);
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 		}
 
 		/**
@@ -965,13 +978,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Base Game Symbols RTP:");
 			Console.Write ("\t");
-			for (int i=0; i<baseSymbolMoney.Length; i++) {
+			for (int i = 0; i < baseSymbolMoney.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<baseSymbolMoney[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<baseSymbolMoney.Length; i++) {
+			for (int j = 0; j < baseSymbolMoney [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < baseSymbolMoney.Length; i++) {
 					Console.Write ((double)baseSymbolMoney [i] [j] / (double)lostMoney + "\t");
 				}
 				Console.WriteLine ();
@@ -979,13 +992,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Base Game Symbols Hit Rate:");
 			Console.Write ("\t");
-			for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+			for (int i = 0; i < baseGameSymbolsHitRate.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<baseGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+			for (int j = 0; j < baseGameSymbolsHitRate [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < baseGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)baseGameSymbolsHitRate [i] [j] + "\t");
 				}
 				Console.WriteLine ();
@@ -993,13 +1006,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Base Game Symbols Hit Frequency:");
 			Console.Write ("\t");
-			for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+			for (int i = 0; i < baseGameSymbolsHitRate.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<baseGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<baseGameSymbolsHitRate.Length; i++) {
+			for (int j = 0; j < baseGameSymbolsHitRate [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < baseGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)baseGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames + "\t");
 				}
 				Console.WriteLine ();
@@ -1008,13 +1021,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Free Games Symbols RTP:");
 			Console.Write ("\t");
-			for (int i=0; i<freeSymbolMoney.Length; i++) {
+			for (int i = 0; i < freeSymbolMoney.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<freeSymbolMoney[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<freeSymbolMoney.Length; i++) {
+			for (int j = 0; j < freeSymbolMoney [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < freeSymbolMoney.Length; i++) {
 					Console.Write ((double)freeSymbolMoney [i] [j] / (double)lostMoney + "\t");
 				}
 				Console.WriteLine ();
@@ -1022,13 +1035,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Free Games Symbols Hit Frequency:");
 			Console.Write ("\t");
-			for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+			for (int i = 0; i < freeGameSymbolsHitRate.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<freeGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+			for (int j = 0; j < freeGameSymbolsHitRate [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < freeGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)freeGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames + "\t");
 				}
 				Console.WriteLine ();
@@ -1036,13 +1049,13 @@ namespace CSharpSimulation
 			Console.WriteLine ();
 			Console.WriteLine ("Free Games Symbols Hit Rate:");
 			Console.Write ("\t");
-			for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+			for (int i = 0; i < freeGameSymbolsHitRate.Length; i++) {
 				Console.Write ("" + i + "of\t");
 			}
 			Console.WriteLine ();
-			for (int j=0; j<freeGameSymbolsHitRate[0].Length; j++) {
-				Console.Write (symbolsNames[ j ] + "\t");
-				for (int i=0; i<freeGameSymbolsHitRate.Length; i++) {
+			for (int j = 0; j < freeGameSymbolsHitRate [0].Length; j++) {
+				Console.Write (symbolsNames [j] + "\t");
+				for (int i = 0; i < freeGameSymbolsHitRate.Length; i++) {
 					Console.Write ((double)freeGameSymbolsHitRate [i] [j] + "\t");
 				}
 				Console.WriteLine ();
@@ -1058,20 +1071,21 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void printView () {
-			int max = view[0].Length;
-			for (int i=0; i<view.Length; i++) {
-				if(max < view[i].Length) {
-					max = view[i].Length;
+		private static void printView ()
+		{
+			int max = view [0].Length;
+			for (int i = 0; i < view.Length; i++) {
+				if (max < view [i].Length) {
+					max = view [i].Length;
 				}
 			}
 
-			for(int j=0; j<max; j++) {
-				for (int i=0; i<view.Length && j<view[i].Length; i++) {
-					Console.Write(symbolsNames[ view[i][j] ] + "   ");
+			for (int j = 0; j < max; j++) {
+				for (int i = 0; i < view.Length && j < view [i].Length; i++) {
+					Console.Write (symbolsNames [view [i] [j]] + "   ");
 				}
 
-				Console.WriteLine();
+				Console.WriteLine ();
 			}
 		}
 
@@ -1086,14 +1100,15 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		private static void printExecuteCommand(string[] args) {
-			Console.WriteLine( "Execute command:" );
-			Console.WriteLine();
-			Console.Write( System.IO.Path.GetFileName(System.Reflection.Assembly.GetEntryAssembly().Location)+" " );
-			for(int i=0; i<args.Length; i++) {
-				Console.Write(args[i] + " ");
+		private static void printExecuteCommand (string [] args)
+		{
+			Console.WriteLine ("Execute command:");
+			Console.WriteLine ();
+			Console.Write (System.IO.Path.GetFileName (System.Reflection.Assembly.GetEntryAssembly ().Location) + " ");
+			for (int i = 0; i < args.Length; i++) {
+				Console.Write (args [i] + " ");
 			}
-			Console.WriteLine();
+			Console.WriteLine ();
 		}
 
 		/**
@@ -1107,97 +1122,98 @@ namespace CSharpSimulation
 		 *
 		 * @date 13 Jul 2014
 		 */
-		public static void Main (string[] args) {
-			printExecuteCommand(args);
-			Console.WriteLine();
+		public static void Main (string [] args)
+		{
+			printExecuteCommand (args);
+			Console.WriteLine ();
 
 			long numberOfSimulations = 10000000L;
 			long progressPrintOnIteration = 10000000L;
-/*
-view = new int[][]{
-	new int[]{ 3, 11, 3 },
-	new int[]{ 4, 12, 4 },
-	new int[]{ 5, 8, 5 },
-	new int[]{ 6, 12, 6 },
-	new int[]{ 7, 9, 7 },
-};
+			/*
+			view = new int[][]{
+				new int[]{ 3, 11, 3 },
+				new int[]{ 4, 12, 4 },
+				new int[]{ 5, 8, 5 },
+				new int[]{ 6, 12, 6 },
+				new int[]{ 7, 9, 7 },
+			};
 			Console.WriteLine(linesWin (view));
 			Console.WriteLine(scatterWin (view));
 			printView ();
-Console.ReadLine ();
-return;
-/**/
+			Console.ReadLine ();
+			return;
+			/**/
 
 			/*
 			 * Parse command line arguments.
 			 */
-			for(int a=0; a<args.Length; a++) {
-				if(args.Length > 0 && args[a].Contains("-g")) {
-					String parameter = args[a].Substring(2);
+			for (int a = 0; a < args.Length; a++) {
+				if (args.Length > 0 && args [a].Contains ("-g")) {
+					String parameter = args [a].Substring (2);
 
-					if(parameter.Contains("k")) {
-						parameter = parameter.Substring(0, parameter.Length-1);
+					if (parameter.Contains ("k")) {
+						parameter = parameter.Substring (0, parameter.Length - 1);
 						parameter += "000";
 					}
 
-					if(parameter.Contains("m")) {
-						parameter = parameter.Substring(0, parameter.Length-1);
+					if (parameter.Contains ("m")) {
+						parameter = parameter.Substring (0, parameter.Length - 1);
 						parameter += "000000";
 					}
 
 					try {
-						numberOfSimulations = Int64.Parse(parameter );
-					} catch(Exception) {
+						numberOfSimulations = Int64.Parse (parameter);
+					} catch (Exception) {
 					}
 				}
 
-				if(args.Length > 0 && args[a].Contains("-p")) {
-					String parameter = args[a].Substring(2);
+				if (args.Length > 0 && args [a].Contains ("-p")) {
+					String parameter = args [a].Substring (2);
 
-					if(parameter.Contains("k")) {
-						parameter = parameter.Substring(0, parameter.Length-1);
+					if (parameter.Contains ("k")) {
+						parameter = parameter.Substring (0, parameter.Length - 1);
 						parameter += "000";
 					}
 
-					if(parameter.Contains("m")) {
-						parameter = parameter.Substring(0, parameter.Length-1);
+					if (parameter.Contains ("m")) {
+						parameter = parameter.Substring (0, parameter.Length - 1);
 						parameter += "000000";
 					}
 
 					try {
-						progressPrintOnIteration = Int64.Parse(parameter );
+						progressPrintOnIteration = Int64.Parse (parameter);
 						verboseOutput = true;
-					} catch(Exception) {
+					} catch (Exception) {
 					}
 				}
 
-				if(args.Length > 0 && args[a].Contains("-freeoff")) {
+				if (args.Length > 0 && args [a].Contains ("-freeoff")) {
 					freeOff = true;
 				}
 
-				if(args.Length > 0 && args[a].Contains("-wildsoff")) {
+				if (args.Length > 0 && args [a].Contains ("-wildsoff")) {
 					wildsOff = true;
 				}
 
-				if(args.Length > 0 && args[a].Contains("-bruteforce")) {
+				if (args.Length > 0 && args [a].Contains ("-bruteforce")) {
 					bruteForce = true;
 				}
 
-				if(args.Length > 0 && args[a].Contains("-verify")) {
-					printDataStructures();
-					Environment.Exit(0);
+				if (args.Length > 0 && args [a].Contains ("-verify")) {
+					printDataStructures ();
+					Environment.Exit (0);
 				}
 
-				if(args.Length > 0 && args[a].Contains("-help")) {
-					printHelp();
-					Console.WriteLine();
-					Environment.Exit(0);
+				if (args.Length > 0 && args [a].Contains ("-help")) {
+					printHelp ();
+					Console.WriteLine ();
+					Environment.Exit (0);
 				}
 
-				if(args.Length > 0 && args[a].Contains("-h")) {
-					printHelp();
-					Console.WriteLine();
-					Environment.Exit(0);
+				if (args.Length > 0 && args [a].Contains ("-h")) {
+					printHelp ();
+					Console.WriteLine ();
+					Environment.Exit (0);
 				}
 			}
 
@@ -1205,9 +1221,9 @@ return;
 			 * Calculate all combinations in base game.
 			 */
 			if (bruteForce == true) {
-				reelsStops = new int[]{0, 0, 0, 0, 0};
+				reelsStops = new int [] { 0, 0, 0, 0, 0 };
 				numberOfSimulations = 1;
-				for (int i=0; i<baseReels.Length; i++) {
+				for (int i = 0; i < baseReels.Length; i++) {
 					numberOfSimulations *= baseReels [i].Length;
 				}
 			}
@@ -1216,37 +1232,37 @@ return;
 			 * Simulation main loop.
 			 */
 			for (long g = 0L; g < numberOfSimulations; g++) {
-				if(verboseOutput == true && g==0) {
-					Console.WriteLine("Games\tRTP\tRTP(Base)\tRTP(Free)");
+				if (verboseOutput == true && g == 0) {
+					Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
 				}
 
 				/*
 				 * Print progress report.
 				 */
-				if(verboseOutput == true && g%progressPrintOnIteration == 0) {
+				if (verboseOutput == true && g % progressPrintOnIteration == 0) {
 					try {
-						Console.Write(g);
-						Console.Write("\t");
-						Console.Write(String.Format("  {0:F6}", ((double) wonMoney / (double) lostMoney)));
-						Console.Write("\t");
-						Console.Write(String.Format("  {0:F6}", ((double) baseMoney / (double) lostMoney)));
-						Console.Write("\t");
-						Console.Write(String.Format("  {0:F6}", ((double) freeMoney / (double) lostMoney)));
-					} catch( Exception ) {
+						Console.Write (g);
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)wonMoney / (double)lostMoney)));
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)baseMoney / (double)lostMoney)));
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)freeMoney / (double)lostMoney)));
+					} catch (Exception) {
 					}
-					Console.WriteLine();
+					Console.WriteLine ();
 				}
 
 				totalNumberOfGames++;
 
 				lostMoney += totalBet;
 
-				singleBaseGame();
+				singleBaseGame ();
 			}
 
-			Console.WriteLine("********************************************************************************");
-			printStatistics();
-			Console.WriteLine("********************************************************************************");
+			Console.WriteLine ("********************************************************************************");
+			printStatistics ();
+			Console.WriteLine ("********************************************************************************");
 		}
 	}
 }
