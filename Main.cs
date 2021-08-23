@@ -98,6 +98,17 @@ namespace CSharpSimulation
 		};
 
 		/**
+		 * Current visible symbols on the screen.
+		 */
+		private static int [] [] view = {
+			new int[]{ -1, -1, -1 },
+			new int[]{ -1, -1, -1 },
+			new int[]{ -1, -1, -1 },
+			new int[]{ -1, -1, -1 },
+			new int[]{ -1, -1, -1 }
+		};
+
+		/**
 		 * Stips in base game.
 		 */
 		private static int [] [] baseReels = {
@@ -120,20 +131,19 @@ namespace CSharpSimulation
 		};
 
 		/**
+		 * Slices in base game.
+		 */
+		private static int [] [] [] baseSlicesReels = { };
+
+		/**
+		 * Slices in free spins.
+		 */
+		private static int [] [] [] freeSlicesReels = { };
+
+		/**
 		 * Use reels stops in brute force combinations generation.
 		 */
 		private static int [] reelsStops = new int [] { 0, 0, 0, 0, 0 };
-
-		/**
-		 * Current visible symbols on the screen.
-		 */
-		private static int [] [] view = {
-			new int[]{ -1, -1, -1 },
-			new int[]{ -1, -1, -1 },
-			new int[]{ -1, -1, -1 },
-			new int[]{ -1, -1, -1 },
-			new int[]{ -1, -1, -1 }
-		};
 
 		/**
 		 * Current free spins multiplier.
@@ -338,6 +348,16 @@ namespace CSharpSimulation
 		};
 
 		/**
+		 * Volatility estimation flag.
+		 */
+		private static bool slicesReels = false;
+
+		/**
+		 * Sum collected for volatility index calculation.
+		 */
+		private static int sampleSize = 100;
+
+		/**
 		 * Static constructor for discrete distributions shuffling.
 		 *
 		 * @author Todor Balabanov
@@ -348,6 +368,44 @@ namespace CSharpSimulation
 		 */
 		static MainClass ()
 		{
+		}
+
+		/**
+		 * Slice reels for estimated statistics.
+		 *
+		 * @param reels Original reels.
+		 *
+		 * @param view Screen view.
+		 *
+		 * @param size Sample size.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 23 Aug 2021
+		 */
+		private static int[][][] sliceReels (int[][] reels, int [][] view, int size)
+		{
+			int[][][] slices = new int [reels.Length] [] [];
+			for (int i = 0; i < reels.Length; i++) {
+				slices [i] = new int [size] [];
+				for (int j = 0; j < size; j++) {
+					slices [i] [j] = new int [view [i].Length];
+
+					int r = prng.Next (reels [i].Length);
+					for (int k = 0; k < slices [i] [j].Length; k++) {
+						slices [i] [j] [k] = reels [i] [r];
+
+						r++;
+						if (r == reels [i].Length) {
+							r = 0;
+						}
+					}
+				}
+			}
+			
+			return slices;
 		}
 
 		/**
@@ -860,6 +918,9 @@ namespace CSharpSimulation
 			Console.WriteLine ("* -volatility     Volatility calculation instead of simulation.               *");
 			Console.WriteLine ("* -ci<number>     Confidence interval (default 0.95).                         *");
 			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -slices         Volatility calculation instead of simulation.               *");
+			Console.WriteLine ("* -s<number>      Slices sample size (default 100).                           *");
+			Console.WriteLine ("*                                                                             *");
 			Console.WriteLine ("* -verify         Print input data structures.                                *");
 			Console.WriteLine ("*                                                                             *");
 			Console.WriteLine ("*******************************************************************************");
@@ -1277,6 +1338,26 @@ namespace CSharpSimulation
 						confidenceInterval = Double.Parse (parameter);
 					} catch (Exception) {
 					}
+				}
+
+				if (args.Length > 0 && args [a].Contains ("-slices")) {
+					slicesReels = true;
+				}
+
+				if (args.Length > 0 && args [a].Contains ("-s")) {
+					String parameter = args [a].Substring (2);
+
+					try {
+						sampleSize = Int32.Parse (parameter);
+					} catch (Exception) {
+					}
+
+					if (sampleSize < 0) {
+						sampleSize = 0;
+					}
+
+					baseSlicesReels = sliceReels (baseReels, view, sampleSize);
+					freeSlicesReels = sliceReels (freeReels, view, sampleSize);
 				}
 
 				if (args.Length > 0 && args [a].Contains ("-verify")) {
