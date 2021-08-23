@@ -246,6 +246,16 @@ namespace CSharpSimulation
 		private static bool bruteForce = false;
 
 		/**
+		 * Volatility estimation flag.
+		 */
+		private static bool volatilityEstimation = false;
+
+		/**
+		 * Confidence interval, from 0.0 to 1.0.
+		 */
+		private static double confidenceInterval = 0.95;
+
+		/**
 		 * Symbols win hit rate in base game.
 		 */
 		private static long [] [] baseSymbolMoney = {
@@ -291,6 +301,40 @@ namespace CSharpSimulation
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0}
+		};
+
+		/**
+		 * RTP calculated for volatility index calculation.
+		 */
+		private static double volatilityRTP = 0;
+
+		/**
+		 * Sum collected for volatility index calculation.
+		 */
+		private static double volatilitySum = 0;
+
+		/**
+		 * Particular win payment.
+		 */
+		private static double [] [] Pi = {
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+		};
+
+		/**
+		 * Particular win hit rate.
+		 */
+		private static double [] [] Hi = {
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 		};
 
 		/**
@@ -515,6 +559,11 @@ namespace CSharpSimulation
 				freeGameSymbolsHitRate [number] [symbol]++;
 			}
 
+			/* Collect information for the volatility index. */
+			if (volatilityEstimation == true) {
+				volatilitySum += Hi [number] [symbol] * (win - volatilityRTP) * (win - volatilityRTP);
+			}
+
 			return (win);
 		}
 
@@ -555,6 +604,11 @@ namespace CSharpSimulation
 				 * Accumulate line win.
 				 */
 				win += result;
+
+				/* Volatility is calculated only on a single line. */
+				if (volatilityEstimation == true && l == 0) {
+					break;
+				}
 			}
 
 			return (win);
@@ -590,6 +644,11 @@ namespace CSharpSimulation
 			} else if (win > 0 && freeGamesNumber > 0) {
 				freeSymbolMoney [numberOfScatters] [12] += win * freeGamesMultiplier;
 				freeGameSymbolsHitRate [numberOfScatters] [12]++;
+			}
+
+			/* Collect information for the volatility index. */
+			if (volatilityEstimation == true) {
+				volatilitySum += Hi [numberOfScatters] [12] * (win - volatilityRTP) * (win - volatilityRTP);
 			}
 
 			return (win);
@@ -732,6 +791,11 @@ namespace CSharpSimulation
 				baseGameHitRate++;
 			}
 
+			/* Volatility is estimated only for the base game. */
+			if (volatilityEstimation == true) {
+				return;
+			}
+
 			/*
 			 * Check for free games.
 			 */
@@ -792,6 +856,9 @@ namespace CSharpSimulation
 			Console.WriteLine ("* -freeoff        Switch off free spins.                                      *");
 			Console.WriteLine ("* -wildsoff       Switch off wilds.                                           *");
 			Console.WriteLine ("* -bruteforce     Switch on brute force only for the base game.               *");
+			Console.WriteLine ("*                                                                             *");
+			Console.WriteLine ("* -volatility     Volatility calculation instead of simulation.               *");
+			Console.WriteLine ("* -ci<number>     Confidence interval (default 0.95).                         *");
 			Console.WriteLine ("*                                                                             *");
 			Console.WriteLine ("* -verify         Print input data structures.                                *");
 			Console.WriteLine ("*                                                                             *");
@@ -1199,6 +1266,19 @@ namespace CSharpSimulation
 					bruteForce = true;
 				}
 
+				if (args.Length > 0 && args [a].Contains ("-volatility")) {
+					volatilityEstimation = true;
+				}
+
+				if (args.Length > 0 && args [a].Contains ("-ci")) {
+					String parameter = args [a].Substring (3);
+
+					try {
+						confidenceInterval = Double.Parse (parameter);
+					} catch (Exception) {
+					}
+				}
+
 				if (args.Length > 0 && args [a].Contains ("-verify")) {
 					printDataStructures ();
 					Environment.Exit (0);
@@ -1229,40 +1309,86 @@ namespace CSharpSimulation
 			}
 
 			/*
-			 * Simulation main loop.
+			 * Volatility estimation loop.
 			 */
-			for (long g = 0L; g < numberOfSimulations; g++) {
-				if (verboseOutput == true && g == 0) {
-					Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
+			if (volatilityEstimation == true) {
+				/* Collect base statistics. */
+				for (long g = 0L; g < numberOfSimulations; g++) {
+					totalNumberOfGames++;
+					lostMoney += totalBet;
+					singleBaseGame ();
 				}
 
-				/*
-				 * Print progress report.
-				 */
-				if (verboseOutput == true && g % progressPrintOnIteration == 0) {
-					try {
-						Console.Write (g);
-						Console.Write ("\t");
-						Console.Write (String.Format ("  {0:F6}", ((double)wonMoney / (double)lostMoney)));
-						Console.Write ("\t");
-						Console.Write (String.Format ("  {0:F6}", ((double)baseMoney / (double)lostMoney)));
-						Console.Write ("\t");
-						Console.Write (String.Format ("  {0:F6}", ((double)freeMoney / (double)lostMoney)));
-					} catch (Exception) {
+				/* Calculate hit rate and RTP. */
+				volatilityRTP = (double)wonMoney / (double)lostMoney;
+				for (int i = 0; i < paytable.Length; i++) {
+					for (int j = 0; j < paytable [i].Length; j++) {
+						Pi [i] [j] = paytable [i] [j];
+						Hi [i] [j] = (double)baseGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames;
 					}
-					Console.WriteLine ();
 				}
 
-				totalNumberOfGames++;
+				/* Collect volatility statistics. */
+				wonMoney = 0;
+				lostMoney = 0;
+				volatilitySum = 0;
+				totalNumberOfGames = 0;
+				for (long g = 0L; g < numberOfSimulations; g++) {
+					totalNumberOfGames++;
+					lostMoney += totalBet;
+					singleBaseGame ();
+				}
 
-				lostMoney += totalBet;
+				double N = totalNumberOfGames;
+				double C = confidenceInterval;
+				double R = (double)wonMoney / (double)lostMoney;
+				double V = C * Math.Sqrt (volatilitySum / N);
 
-				singleBaseGame ();
+				Console.WriteLine ("********************************************************************************");
+				Console.WriteLine (R);
+				Console.WriteLine (V);
+				Console.WriteLine ("********************************************************************************");
+				printStatistics ();
+				Console.WriteLine ("********************************************************************************");
 			}
 
-			Console.WriteLine ("********************************************************************************");
-			printStatistics ();
-			Console.WriteLine ("********************************************************************************");
+			/*
+			 * Simulation main loop.
+			 */
+			if (volatilityEstimation == false) {
+				for (long g = 0L; g < numberOfSimulations; g++) {
+					if (verboseOutput == true && g == 0) {
+						Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
+					}
+
+					/*
+					 * Print progress report.
+					 */
+					if (verboseOutput == true && g % progressPrintOnIteration == 0) {
+						try {
+							Console.Write (g);
+							Console.Write ("\t");
+							Console.Write (String.Format ("  {0:F6}", ((double)wonMoney / (double)lostMoney)));
+							Console.Write ("\t");
+							Console.Write (String.Format ("  {0:F6}", ((double)baseMoney / (double)lostMoney)));
+							Console.Write ("\t");
+							Console.Write (String.Format ("  {0:F6}", ((double)freeMoney / (double)lostMoney)));
+						} catch (Exception) {
+						}
+						Console.WriteLine ();
+					}
+
+					totalNumberOfGames++;
+
+					lostMoney += totalBet;
+
+					singleBaseGame ();
+				}
+
+				Console.WriteLine ("********************************************************************************");
+				printStatistics ();
+				Console.WriteLine ("********************************************************************************");
+			}
 		}
 	}
 }
