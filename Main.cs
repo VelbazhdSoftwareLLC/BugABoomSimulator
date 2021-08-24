@@ -20,6 +20,11 @@
 *                                                                              *
 *******************************************************************************/
 
+//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m
+//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -slices -s100
+//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -volatility
+//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -volatility -slices -s100
+
 using System;
 
 namespace CSharpSimulation
@@ -35,14 +40,10 @@ namespace CSharpSimulation
 	*/
 	class MainClass
 	{
-		/**
-		 * Pseudo-random number generator.
-		 */
+		/** Pseudo-random number generator. */
 		private static Random prng = new Random ();
 
-		/**
-		 * List of symbols names.
-		 */
+		/** List of symbols names. */
 		private static String [] symbolsNames = {
 			"SHIRT   ",
 			"SPEAKER ",
@@ -59,9 +60,7 @@ namespace CSharpSimulation
 			"SCATTER ",
 		};
 
-		/**
-		 * Slot game paytable.
-		 */
+		/** Slot game paytable. */
 		private static int [] [] paytable = {
 			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -71,9 +70,7 @@ namespace CSharpSimulation
 			new int[]{125,125,125,250,250,250,500,500,750,750,1250,10000,0},
 		};
 
-		/**
-		 * Lines combinations.
-		 */
+		/** Lines combinations. */
 		private static int [] [] lines = {
 			new int[]{1,1,1,1,1},
 			new int[]{0,0,0,0,0},
@@ -97,9 +94,7 @@ namespace CSharpSimulation
 			new int[]{0,2,2,2,0},
 		};
 
-		/**
-		 * Current visible symbols on the screen.
-		 */
+		/** Current visible symbols on the screen. */
 		private static int [] [] view = {
 			new int[]{ -1, -1, -1 },
 			new int[]{ -1, -1, -1 },
@@ -108,9 +103,7 @@ namespace CSharpSimulation
 			new int[]{ -1, -1, -1 }
 		};
 
-		/**
-		 * Stips in base game.
-		 */
+		/** Stips in base game. */
 		private static int [] [] baseReels = {
 			new int[]{0,4,11,1,3,2,5,9,0,4,2,7,8,0,5,2,6,10,0,5,1,3,9,4,2,7,8,0,5,2,6,9,0,5,2,4,10,0,5,1,7,9,2,5},
 			new int[]{4,1,11,2,7,0,9,5,1,3,8,4,2,6,12,4,0,3,1,8,4,2,6,0,10,4,1,3,2,12,4,0,7,1,8,2,4,0,9,1,6,2,8,0},
@@ -119,9 +112,7 @@ namespace CSharpSimulation
 			new int[]{7,0,11,4,6,1,9,5,10,2,7,3,8,0,4,9,1,6,5,10,2,8,3},
 		};
 
-		/**
-		 * Stips in free spins.
-		 */
+		/** Stips in free spins. */
 		private static int [] [] freeReels = {
 			new int[]{2,4,11,0,3,7,1,4,8,2,5,6,0,5,9,1,3,7,2,4,10,0,3,1,8,4,2,5,6,0,4,1,10,5,2,3,7,0,5,9,1,3,6},
 			new int[]{4,2,11,0,5,2,12,1,7,0,9,2,3,0,12,2,4,0,5,8,2,6,0,12,2,7,1,3,10,6,0},
@@ -130,144 +121,88 @@ namespace CSharpSimulation
 			new int[]{3,4,11,0,6,5,3,8,1,7,4,9,2,5,10,0,3,8,1,4,10,2,5,9},
 		};
 
-		/**
-		 * Slices in base game.
-		 */
+		/** Slices in base game. */
 		private static int [] [] [] baseSlicesReels = { };
 
-		/**
-		 * Slices in free spins.
-		 */
+		/** Slices in free spins. */
 		private static int [] [] [] freeSlicesReels = { };
 
-		/**
-		 * Use reels stops in brute force combinations generation.
-		 */
+		/** Use reels stops in brute force combinations generation. */
 		private static int [] reelsStops = new int [] { 0, 0, 0, 0, 0 };
 
-		/**
-		 * Current free spins multiplier.
-		 */
+		/** Current free spins multiplier. */
 		private static int freeGamesMultiplier = 0;
 
-		/**
-		 * If wild is presented in the line multiplier.
-		 */
+		/** If wild is presented in the line multiplier. */
 		private static int wildInLineMultiplier = 0;
 
-		/**
-		 * If scatter win is presented on the screen.
-		 */
+		/** If scatter win is presented on the screen. */
 		private static int scatterMultiplier = 1;
 
-		/**
-		 * Total bet in single base game spin.
-		 */
+		/** Total bet in single base game spin. */
 		private static int singleLineBet = 1;
 
-		/**
-		 * Total bet in single base game spin.
-		 */
+		/** Total bet in single base game spin. */
 		private static int totalBet = singleLineBet * lines.Length;
 
-		/**
-		 * Free spins to be played.
-		 */
+		/** Free spins to be played. */
 		private static int freeGamesNumber = 0;
 
-		/**
-		 * Total amount of won money.
-		 */
+		/** Total amount of won money. */
 		private static long wonMoney = 0L;
 
-		/**
-		 * Total amount of lost money.
-		 */
+		/** Total amount of lost money. */
 		private static long lostMoney = 0L;
 
-		/**
-		 * Total amount of won money in base game.
-		 */
+		/** Total amount of won money in base game. */
 		private static long baseMoney = 0L;
 
-		/**
-		 * Total amount of won money in free spins.
-		 */
+		/** Total amount of won money in free spins. */
 		private static long freeMoney = 0L;
 
-		/**
-		 * Max amount of won money in base game.
-		 */
+		/** Max amount of won money in base game. */
 		private static long baseMaxWin = 0L;
 
-		/**
-		 * Max amount of won money in free spins.
-		 */
+		/** Max amount of won money in free spins. */
 		private static long freeMaxWin = 0L;
 
-		/**
-		 * Total number of base games played.
-		 */
+		/** Total number of base games played. */
 		private static long totalNumberOfGames = 0L;
 
-		/**
-		 * Total number of free spins played.
-		 */
+		/** Total number of free spins played. */
 		private static long totalNumberOfFreeGames = 0L;
 
-		/**
-		 * Total number of free spins started.
-		 */
+		/** Total number of free spins started. */
 		private static long totalNumberOfFreeGameStarts = 0L;
 
-		/**
-		 * Total number of free spins started.
-		 */
+		/** Total number of free spins started. */
 		private static long totalNumberOfFreeGameRestarts = 0L;
 
-		/**
-		 * Hit rate of wins in base game.
-		 */
+		/** Hit rate of wins in base game. */
 		private static long baseGameHitRate = 0L;
 
-		/**
-		 * Hit rate of wins in free spins.
-		 */
+		/** Hit rate of wins in free spins. */
 		private static long freeGamesHitRate = 0L;
 
-		/**
-		 * Verbose output flag.
-		 */
+		/** Verbose output flag. */
 		private static bool verboseOutput = false;
 
-		/**
-		 * Free spins flag.
-		 */
+		/** Free spins flag. */
 		private static bool freeOff = false;
 
-		/**
-		 * Wild substitution flag.
-		 */
+		/** Wild substitution flag. */
 		private static bool wildsOff = false;
 
-		/**
-		 * Brute force all winning combinations in base game only flag.
-		 */
+		/** Brute force all winning combinations in base game only flag. */
 		private static bool bruteForce = false;
 
-		/**
-		 * Volatility estimation flag.
-		 */
+		/** Volatility estimation flag. */
 		private static bool volatilityEstimation = false;
 
-		/**
-		 * Confidence interval, from 0.0 to 1.0.
-		 */
+		/** Confidence interval, from 0.0 to 1.0. */
 		private static double confidenceInterval = 0.95;
 
-		/**
-		 * Symbols win hit rate in base game.
-		 */
+		/** Symbols win hit rate in base game. */
 		private static long [] [] baseSymbolMoney = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -277,9 +212,7 @@ namespace CSharpSimulation
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 
-		/**
-		 * Symbols hit rate in base game.
-		 */
+		/** Symbols hit rate in base game. */
 		private static long [] [] baseGameSymbolsHitRate = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -289,9 +222,7 @@ namespace CSharpSimulation
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 
-		/**
-		 * Symbols win hit rate in base game.
-		 */
+		/** Symbols win hit rate in base game. */
 		private static long [] [] freeSymbolMoney = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -301,9 +232,7 @@ namespace CSharpSimulation
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 
-		/**
-		 * Symbols hit rate in base game.
-		 */
+		/** Symbols hit rate in base game. */
 		private static long [] [] freeGameSymbolsHitRate = {
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -313,19 +242,13 @@ namespace CSharpSimulation
 			new long[]{0,0,0,0,0,0,0,0,0,0,0,0,0}
 		};
 
-		/**
-		 * RTP calculated for volatility index calculation.
-		 */
+		/** RTP calculated for volatility index calculation. */
 		private static double volatilityRTP = 0;
 
-		/**
-		 * Sum collected for volatility index calculation.
-		 */
+		/** Sum collected for volatility index calculation. */
 		private static double volatilitySum = 0;
 
-		/**
-		 * Particular win payment.
-		 */
+		/** Particular win payment. */
 		private static double [] [] Pi = {
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -335,9 +258,7 @@ namespace CSharpSimulation
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 		};
 
-		/**
-		 * Particular win hit rate.
-		 */
+		/** Particular win hit rate. */
 		private static double [] [] Hi = {
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -347,14 +268,10 @@ namespace CSharpSimulation
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 		};
 
-		/**
-		 * Volatility estimation flag.
-		 */
+		/** Volatility estimation flag. */
 		private static bool slicesReels = false;
 
-		/**
-		 * Sum collected for volatility index calculation.
-		 */
+		/** Sum collected for volatility index calculation. */
 		private static int sampleSize = 100;
 
 		/**
@@ -385,9 +302,9 @@ namespace CSharpSimulation
 		 *
 		 * @date 23 Aug 2021
 		 */
-		private static int[][][] sliceReels (int[][] reels, int [][] view, int size)
+		private static int [] [] [] sliceReels (int [] [] reels, int [] [] view, int size)
 		{
-			int[][][] slices = new int [reels.Length] [] [];
+			int [] [] [] slices = new int [reels.Length] [] [];
 			for (int i = 0; i < reels.Length; i++) {
 				slices [i] = new int [size] [];
 				for (int j = 0; j < size; j++) {
@@ -404,7 +321,7 @@ namespace CSharpSimulation
 					}
 				}
 			}
-			
+
 			return slices;
 		}
 
@@ -419,14 +336,14 @@ namespace CSharpSimulation
 		 *
 		 * @date 06 Aug 2014
 		 */
-		private static void nextCombination (int [] reelsStops)
+		private static void nextCombination (int [] stops)
 		{
-			reelsStops [0] += 1;
-			for (int i = 0; i < reelsStops.Length; i++) {
-				if (reelsStops [i] >= baseReels [i].Length) {
-					reelsStops [i] = 0;
-					if (i < reelsStops.Length - 1) {
-						reelsStops [i + 1] += 1;
+			stops [0] += 1;
+			for (int i = 0; i < stops.Length; i++) {
+				if (stops [i] >= baseReels [i].Length) {
+					stops [i] = 0;
+					if (i < stops.Length - 1) {
+						stops [i + 1] += 1;
 					}
 				}
 			}
@@ -466,6 +383,27 @@ namespace CSharpSimulation
 		}
 
 		/**
+		 * Single reels spin to fill view with symbols.
+		 *
+		 * @param reels Reels slices.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 24 Aug 2021
+		 */
+		private static void spin (int [] [] [] reels)
+		{
+			for (int i = 0; i < view.Length && i < reels.Length; i++) {
+				int r = prng.Next (reels [i].Length);
+				view [i] [0] = reels [i] [r] [0];
+				view [i] [1] = reels [i] [r] [1];
+				view [i] [2] = reels [i] [r] [2];
+			}
+		}
+
+		/**
 		 * Calculate win in particular line.
 		 *
 		 * @param line Single line.
@@ -482,20 +420,14 @@ namespace CSharpSimulation
 		{
 			int [] values = { 11, 0, 0 };
 
-			/*
-			 * If there is no leading wild there is no wild win.
-			 */
+			/* If there is no leading wild there is no wild win. */
 			if (line [0] != values [0]) {
 				return (values);
 			}
 
-			/*
-			 * Wild symbol passing to find first regular symbol.
-			 */
+			/* Wild symbol passing to find first regular symbol. */
 			for (int i = 0; i < line.Length; i++) {
-				/*
-				 * First no wild symbol found.
-				 */
+				/* First no wild symbol found. */
 				if (line [i] != values [0]) {
 					break;
 				}
@@ -525,23 +457,16 @@ namespace CSharpSimulation
 		{
 			int [] wildWin = wildLineWin (line);
 
-			/*
-			 * Line win without wild is multiplied by one.
-			 */
+			/* Line win without wild is multiplied by one. */
 			wildInLineMultiplier = 1;
 
-			/*
-			 * Keep first symbol in the line.
+			/* Keep first symbol in the line.
 			 */
 			int symbol = line [0];
 
-			/*
-			 * Wild symbol passing to find first regular symbol.
-			 */
+			/* Wild symbol passing to find first regular symbol. */
 			for (int i = 0; i < line.Length; i++) {
-				/*
-				 * First no wild symbol found.
-				 */
+				/* First no wild symbol found. */
 				if (line [i] != 11) {
 					if (line [i] != 12) {
 						symbol = line [i];
@@ -553,39 +478,27 @@ namespace CSharpSimulation
 					break;
 				}
 
-				/*
-				 * Line win with wild is multiplied by two.
-				 */
+				/* Line win with wild is multiplied by two. */
 				if (i < line.Length - 1) {
 					wildInLineMultiplier = 2;
 				} else if (i == line.Length - 1) {
-					/*
-					 * Line win with five wilds is multiplied by one.
-					 */
+					/* Line win with five wilds is multiplied by one. */
 					wildInLineMultiplier = 1;
 				}
 			}
 
-			/*
-			 * Wild symbol substitution. Other wild are artificial they are not part of the pay table.
-			 */
+			/* Wild symbol substitution. Other wild are artificial they are not part of the pay table. */
 			for (int i = 0; i < line.Length && wildsOff == false; i++) {
 				if (line [i] == 11) {
-					/*
-					 * Substitute wild with regular symbol.
-					 */
+					/* Substitute wild with regular symbol. */
 					line [i] = symbol;
 
-					/*
-					 * Line win with wild is multiplied by two.
-					 */
+					/* Line win with wild is multiplied by two. */
 					wildInLineMultiplier = 2;
 				}
 			}
 
-			/*
-			 * Count symbols in winning line.
-			 */
+			/* Count symbols in winning line. */
 			int number = 0;
 			for (int i = 0; i < line.Length; i++) {
 				if (line [i] == symbol) {
@@ -595,9 +508,7 @@ namespace CSharpSimulation
 				}
 			}
 
-			/*
-			 * Cleare unused symbols.
-			 */
+			/* Cleare unused symbols. */
 			for (int i = number; i < line.Length; i++) {
 				line [i] = -1;
 			}
@@ -642,15 +553,11 @@ namespace CSharpSimulation
 		{
 			int win = 0;
 
-			/*
-			 * Check wins in all possible lines.
-			 */
+			/* Check wins in all possible lines. */
 			for (int l = 0; l < lines.Length; l++) {
 				int [] line = { -1, -1, -1, -1, -1 };
 
-				/*
-				 * Prepare line for combination check.
-				 */
+				/* Prepare line for combination check. */
 				for (int i = 0; i < line.Length; i++) {
 					int index = lines [l] [i];
 					line [i] = view [i] [index];
@@ -658,9 +565,7 @@ namespace CSharpSimulation
 
 				int result = lineWin (line);
 
-				/*
-				 * Accumulate line win.
-				 */
+				/* Accumulate line win. */
 				win += result;
 
 				/* Volatility is calculated only on a single line. */
@@ -740,9 +645,7 @@ namespace CSharpSimulation
 				}
 			}
 
-			/*
-			 * In base game 3+ scatters turn into free spins.
-			 */
+			/* In base game 3+ scatters turn into free spins. */
 			if (numberOfScatters < 3 && freeGamesNumber == 0) {
 				return;
 			} else if (numberOfScatters >= 3 && freeGamesNumber == 0) {
@@ -775,37 +678,30 @@ namespace CSharpSimulation
 				return;
 			}
 
-			/*
-			 * Spin reels.
-			 * In retriggered games from FS1 to FS2 and from FS2 to FS3. FS3 can not rettriger FS.
-			 */
-			spin (freeReels);
+			/* Spin reels. In retriggered games from FS1 to FS2 and from FS2 to FS3. FS3 can not rettriger FS. */
+			if (slicesReels == false) {
+				spin (freeReels);
+			} else if (slicesReels == true) {
+				spin (freeSlicesReels);
+			}
 
-			/*
-			 * Win accumulated by lines.
-			 */
+			/* Win accumulated by lines. */
 			int win = linesWin (view) + scatterWin (view);
 			win *= freeGamesMultiplier;
 
-			/*
-			 * Add win to the statistics.
-			 */
+			/* Add win to the statistics. */
 			freeMoney += win;
 			wonMoney += win;
 			if (freeMaxWin < win) {
 				freeMaxWin = win;
 			}
 
-			/*
-			 * Count free games hit rate.
-			 */
+			/* Count free games hit rate. */
 			if (win > 0) {
 				freeGamesHitRate++;
 			}
 
-			/*
-			 * Check for free games.
-			 */
+			/* Check for free games. */
 			freeGamesSetup ();
 		}
 
@@ -820,31 +716,28 @@ namespace CSharpSimulation
 		 */
 		private static void singleBaseGame ()
 		{
-			/*
-			 * Spin reels.
-			 */
-			spin (baseReels);
+			/* Spin reels. */
+			if (slicesReels == false) {
+				spin (baseReels);
+			} else if (slicesReels == true) {
+				spin (baseSlicesReels);
+			}
+
 			if (bruteForce == true) {
 				nextCombination (reelsStops);
 			}
 
-			/*
-			 * Win accumulated by lines.
-			 */
+			/* Win accumulated by lines. */
 			int win = linesWin (view) + scatterWin (view);
 
-			/*
-			 * Add win to the statistics.
-			 */
+			/* Add win to the statistics. */
 			baseMoney += win;
 			wonMoney += win;
 			if (baseMaxWin < win) {
 				baseMaxWin = win;
 			}
 
-			/*
-			 * Count base game hit rate.
-			 */
+			/* Count base game hit rate. */
 			if (win > 0) {
 				baseGameHitRate++;
 			}
@@ -854,14 +747,10 @@ namespace CSharpSimulation
 				return;
 			}
 
-			/*
-			 * Check for free games.
-			 */
+			/* Check for free games. */
 			freeGamesSetup ();
 
-			/*
-			 * Play all free games.
-			 */
+			/* Play all free games. */
 			while (freeGamesNumber > 0) {
 				totalNumberOfFreeGames++;
 
@@ -1272,9 +1161,7 @@ namespace CSharpSimulation
 			return;
 			/**/
 
-			/*
-			 * Parse command line arguments.
-			 */
+			/* Parse command line arguments. */
 			for (int a = 0; a < args.Length; a++) {
 				if (args.Length > 0 && args [a].Contains ("-g")) {
 					String parameter = args [a].Substring (2);
@@ -1378,9 +1265,7 @@ namespace CSharpSimulation
 				}
 			}
 
-			/*
-			 * Calculate all combinations in base game.
-			 */
+			/* Calculate all combinations in base game. */
 			if (bruteForce == true) {
 				reelsStops = new int [] { 0, 0, 0, 0, 0 };
 				numberOfSimulations = 1;
@@ -1389,9 +1274,7 @@ namespace CSharpSimulation
 				}
 			}
 
-			/*
-			 * Volatility estimation loop.
-			 */
+			/* Volatility estimation loop. */
 			if (volatilityEstimation == true) {
 				/* Collect base statistics. */
 				for (long g = 0L; g < numberOfSimulations; g++) {
@@ -1414,6 +1297,22 @@ namespace CSharpSimulation
 				lostMoney = 0;
 				volatilitySum = 0;
 				totalNumberOfGames = 0;
+				baseSymbolMoney = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
+				baseGameSymbolsHitRate = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
 				for (long g = 0L; g < numberOfSimulations; g++) {
 					totalNumberOfGames++;
 					lostMoney += totalBet;
@@ -1433,18 +1332,14 @@ namespace CSharpSimulation
 				Console.WriteLine ("********************************************************************************");
 			}
 
-			/*
-			 * Simulation main loop.
-			 */
+			/* Simulation main loop. */
 			if (volatilityEstimation == false) {
 				for (long g = 0L; g < numberOfSimulations; g++) {
 					if (verboseOutput == true && g == 0) {
 						Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
 					}
 
-					/*
-					 * Print progress report.
-					 */
+					/* Print progress report. */
 					if (verboseOutput == true && g % progressPrintOnIteration == 0) {
 						try {
 							Console.Write (g);
