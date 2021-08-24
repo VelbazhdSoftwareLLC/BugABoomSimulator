@@ -1294,6 +1294,7 @@ namespace CSharpSimulation
 
 				/* Collect volatility statistics. */
 				wonMoney = 0;
+				baseMoney = 0;
 				lostMoney = 0;
 				volatilitySum = 0;
 				totalNumberOfGames = 0;
