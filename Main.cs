@@ -762,6 +762,148 @@ namespace CSharpSimulation
 		}
 
 		/**
+		 * Simulation with full reels.
+		 *
+		 * @param numberOfSimulations Total number of game runs.
+		 *
+		 * @param progressPrintOnIteration Interval for intermediate progress report.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 30 Aug 2021
+		 */
+		static void fullSimulation (long numberOfSimulations, long progressPrintOnIteration)
+		{
+			for (long g = 0L; g < numberOfSimulations; g++) {
+				if (verboseOutput == true && g == 0) {
+					Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
+				}
+
+				/* Print progress report. */
+				if (verboseOutput == true && g % progressPrintOnIteration == 0) {
+					try {
+						Console.Write (g);
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)wonMoney / (double)lostMoney)));
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)baseMoney / (double)lostMoney)));
+						Console.Write ("\t");
+						Console.Write (String.Format ("  {0:F6}", ((double)freeMoney / (double)lostMoney)));
+					} catch (Exception) {
+					}
+					Console.WriteLine ();
+				}
+
+				totalNumberOfGames++;
+
+				lostMoney += totalBet;
+
+				singleBaseGame ();
+			}
+
+			Console.WriteLine ("********************************************************************************");
+			printStatistics ();
+			Console.WriteLine ("********************************************************************************");
+		}
+
+		/**
+		 * Volatility partial simulation.
+		 *
+		 * @param numberOfSimulations Total number of game runs.
+		 *
+		 * @author Todor Balabanov
+		 *
+		 * @email todor.balabanov@gmail.com
+		 *
+		 * @date 30 Aug 2021
+		 */
+		static void volatilitySimulation (long numberOfSimulations)
+		{
+			/* Collect volatility statistics. */
+			wonMoney = 0;
+			baseMoney = 0;
+			lostMoney = 0;
+			volatilitySum = 0;
+			totalNumberOfGames = 0;
+			baseSymbolMoney = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
+			baseGameSymbolsHitRate = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
+
+			/* Collect base statistics. */
+			for (long g = 0L; g < numberOfSimulations; g++) {
+				totalNumberOfGames++;
+				lostMoney += totalBet;
+				singleBaseGame ();
+			}
+
+			/* Calculate hit rate and RTP. */
+			volatilityRTP = (double)wonMoney / (double)lostMoney;
+			for (int i = 0; i < paytable.Length; i++) {
+				for (int j = 0; j < paytable [i].Length; j++) {
+					Pi [i] [j] = paytable [i] [j];
+					Hi [i] [j] = (double)baseGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames;
+				}
+			}
+
+			/* Collect volatility statistics. */
+			wonMoney = 0;
+			baseMoney = 0;
+			lostMoney = 0;
+			volatilitySum = 0;
+			totalNumberOfGames = 0;
+			baseSymbolMoney = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
+			baseGameSymbolsHitRate = new long [] []{
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+				};
+
+			for (long g = 0L; g < numberOfSimulations; g++) {
+				totalNumberOfGames++;
+				lostMoney += totalBet;
+				singleBaseGame ();
+			}
+
+			double N = totalNumberOfGames;
+			double C = confidenceInterval;
+			double R = (double)wonMoney / (double)lostMoney;
+			double V = C * Math.Sqrt (volatilitySum / N);
+
+			Console.WriteLine ("********************************************************************************");
+			Console.WriteLine (volatilityRTP);
+			Console.WriteLine (R);
+			Console.WriteLine (V);
+			Console.WriteLine ("********************************************************************************");
+			printStatistics ();
+			Console.WriteLine ("********************************************************************************");
+		}
+
+		/**
 		 * Print help information.
 		 *
 		 * @author Todor Balabanov
@@ -1274,98 +1416,20 @@ namespace CSharpSimulation
 				}
 			}
 
-			/* Volatility estimation loop. */
-			if (volatilityEstimation == true) {
-				/* Collect base statistics. */
-				for (long g = 0L; g < numberOfSimulations; g++) {
-					totalNumberOfGames++;
-					lostMoney += totalBet;
-					singleBaseGame ();
-				}
-
-				/* Calculate hit rate and RTP. */
-				volatilityRTP = (double)wonMoney / (double)lostMoney;
-				for (int i = 0; i < paytable.Length; i++) {
-					for (int j = 0; j < paytable [i].Length; j++) {
-						Pi [i] [j] = paytable [i] [j];
-						Hi [i] [j] = (double)baseGameSymbolsHitRate [i] [j] / (double)totalNumberOfGames;
-					}
-				}
-
-				/* Collect volatility statistics. */
-				wonMoney = 0;
-				baseMoney = 0;
-				lostMoney = 0;
-				volatilitySum = 0;
-				totalNumberOfGames = 0;
-				baseSymbolMoney = new long [] []{
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-				};
-				baseGameSymbolsHitRate = new long [] []{
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-					new long [] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-				};
-				for (long g = 0L; g < numberOfSimulations; g++) {
-					totalNumberOfGames++;
-					lostMoney += totalBet;
-					singleBaseGame ();
-				}
-
-				double N = totalNumberOfGames;
-				double C = confidenceInterval;
-				double R = (double)wonMoney / (double)lostMoney;
-				double V = C * Math.Sqrt (volatilitySum / N);
-
-				Console.WriteLine ("********************************************************************************");
-				Console.WriteLine (R);
-				Console.WriteLine (V);
-				Console.WriteLine ("********************************************************************************");
-				printStatistics ();
-				Console.WriteLine ("********************************************************************************");
-			}
-
 			/* Simulation main loop. */
 			if (volatilityEstimation == false) {
-				for (long g = 0L; g < numberOfSimulations; g++) {
-					if (verboseOutput == true && g == 0) {
-						Console.WriteLine ("Games\tRTP\tRTP(Base)\tRTP(Free)");
-					}
+				fullSimulation (numberOfSimulations, progressPrintOnIteration);
+			}
 
-					/* Print progress report. */
-					if (verboseOutput == true && g % progressPrintOnIteration == 0) {
-						try {
-							Console.Write (g);
-							Console.Write ("\t");
-							Console.Write (String.Format ("  {0:F6}", ((double)wonMoney / (double)lostMoney)));
-							Console.Write ("\t");
-							Console.Write (String.Format ("  {0:F6}", ((double)baseMoney / (double)lostMoney)));
-							Console.Write ("\t");
-							Console.Write (String.Format ("  {0:F6}", ((double)freeMoney / (double)lostMoney)));
-						} catch (Exception) {
-						}
-						Console.WriteLine ();
-					}
+			/* Volatility estimation loop. */
+			if (volatilityEstimation == true) {
+				volatilityEstimation = false;
+				fullSimulation (numberOfSimulations, progressPrintOnIteration);
+				volatilityEstimation = true;
 
-					totalNumberOfGames++;
-
-					lostMoney += totalBet;
-
-					singleBaseGame ();
-				}
-
-				Console.WriteLine ("********************************************************************************");
-				printStatistics ();
-				Console.WriteLine ("********************************************************************************");
+				volatilitySimulation (numberOfSimulations);
 			}
 		}
+
 	}
 }
