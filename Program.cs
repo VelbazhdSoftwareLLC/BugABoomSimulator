@@ -1,6 +1,6 @@
 ﻿/*******************************************************************************
 * Bug A Boom Slot Simulation version 0.9.1                                     *
-* Copyrights (C) 2014-2021 Velbazhd Software LLC                               *
+* Copyrights (C) 2014-2023 Velbazhd Software LLC                               *
 *                                                                              *
 * developed by Todor Balabanov ( todor.balabanov@gmail.com )                   *
 * Sofia, Bulgaria                                                              *
@@ -20,23 +20,12 @@
 *                                                                              *
 *******************************************************************************/
 
-//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m
-//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -slices -s100
-//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -volatility
-//TODO Run command: clear && csc Main.cs && mono Main.exe -g10m -volatility -slices -s100
-
 using System;
 
 namespace CSharpSimulation
 {
 	/**
 	* Main application class.
-	*
-	* @author Todor Balabanov
-	*
-	* @email todor.balabanov@gmail.com
-	*
-	* @date 13 Jul 2014
 	*/
 	class MainClass
 	{
@@ -268,7 +257,7 @@ namespace CSharpSimulation
 			new double[]{0,0,0,0,0,0,0,0,0,0,0,0,0},
 		};
 
-		/** Volatility estimation flag. */
+		/** Slice reels flag. */
 		private static bool slicesReels = false;
 
 		/** Sum collected for volatility index calculation. */
@@ -276,12 +265,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Static constructor for discrete distributions shuffling.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		static MainClass ()
 		{
@@ -295,12 +278,6 @@ namespace CSharpSimulation
 		 * @param view Screen view.
 		 *
 		 * @param size Sample size.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 23 Aug 2021
 		 */
 		private static int [] [] [] sliceReels (int [] [] reels, int [] [] view, int size)
 		{
@@ -329,12 +306,6 @@ namespace CSharpSimulation
 		 * Single reels spin to fill view with symbols.
 		 *
 		 * @param reels Reels strips.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 06 Aug 2014
 		 */
 		private static void nextCombination (int [] stops)
 		{
@@ -353,12 +324,6 @@ namespace CSharpSimulation
 		 * Single reels spin to fill view with symbols.
 		 *
 		 * @param reels Reels strips.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void spin (int [] [] reels)
 		{
@@ -386,12 +351,6 @@ namespace CSharpSimulation
 		 * Single reels spin to fill view with symbols.
 		 *
 		 * @param reels Reels slices.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 24 Aug 2021
 		 */
 		private static void spin (int [] [] [] reels)
 		{
@@ -409,12 +368,6 @@ namespace CSharpSimulation
 		 * @param line Single line.
 		 *
 		 * @return Calculated win.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static int [] wildLineWin (int [] line)
 		{
@@ -446,12 +399,6 @@ namespace CSharpSimulation
 		 * @param line Single line.
 		 *
 		 * @return Calculated win.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static int lineWin (int [] line)
 		{
@@ -460,8 +407,7 @@ namespace CSharpSimulation
 			/* Line win without wild is multiplied by one. */
 			wildInLineMultiplier = 1;
 
-			/* Keep first symbol in the line.
-			 */
+			/* Keep first symbol in the line. */
 			int symbol = line [0];
 
 			/* Wild symbol passing to find first regular symbol. */
@@ -542,12 +488,6 @@ namespace CSharpSimulation
 		 * @param view Symbols visible in screen view.
 		 *
 		 * @return Calculated win.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static int linesWin (int [] [] view)
 		{
@@ -580,13 +520,7 @@ namespace CSharpSimulation
 		/**
 		 * Calculate win from scatters.
 		 *
-		 * @retur Win from scatters.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
+		 * @return Win from scatters.
 		 */
 		private static int scatterWin (int [] [] view)
 		{
@@ -619,12 +553,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Setup parameters for free spins mode.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void freeGamesSetup ()
 		{
@@ -661,12 +589,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Play single free spin game.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void singleFreeGame ()
 		{
@@ -707,12 +629,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Play single base game.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void singleBaseGame ()
 		{
@@ -767,12 +683,6 @@ namespace CSharpSimulation
 		 * @param numberOfSimulations Total number of game runs.
 		 *
 		 * @param progressPrintOnIteration Interval for intermediate progress report.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 30 Aug 2021
 		 */
 		static void fullSimulation (long numberOfSimulations, long progressPrintOnIteration)
 		{
@@ -812,12 +722,6 @@ namespace CSharpSimulation
 		 * Volatility partial simulation.
 		 *
 		 * @param numberOfSimulations Total number of game runs.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 30 Aug 2021
 		 */
 		static void volatilitySimulation (long numberOfSimulations)
 		{
@@ -905,18 +809,12 @@ namespace CSharpSimulation
 
 		/**
 		 * Print help information.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void printHelp ()
 		{
 			Console.WriteLine ("*******************************************************************************");
 			Console.WriteLine ("* Bug A Boom Slot Simulation version 0.9.1                                    *");
-			Console.WriteLine ("* Copyrights (C) 2014-2021 Velbazhd Software LLC                              *");
+			Console.WriteLine ("* Copyrights (C) 2014-2023 Velbazhd Software LLC                              *");
 			Console.WriteLine ("*                                                                             *");
 			Console.WriteLine ("* developed by Todor Balabanov ( todor.balabanov@gmail.com )                  *");
 			Console.WriteLine ("* Sofia, Bulgaria                                                             *");
@@ -959,12 +857,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Print all simulation input data structures.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void printDataStructures ()
 		{
@@ -1108,12 +1000,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Print simulation statistics.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void printStatistics ()
 		{
@@ -1223,12 +1109,6 @@ namespace CSharpSimulation
 
 		/**
 		 * Print screen view.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void printView ()
 		{
@@ -1252,12 +1132,6 @@ namespace CSharpSimulation
 		 * Print simulation execution command.
 		 *
 		 * @param args Command line arguments list.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		private static void printExecuteCommand (string [] args)
 		{
@@ -1274,12 +1148,6 @@ namespace CSharpSimulation
 		 * Main application entry point.
 		 *
 		 * @param args Command line arguments list.
-		 *
-		 * @author Todor Balabanov
-		 *
-		 * @email todor.balabanov@gmail.com
-		 *
-		 * @date 13 Jul 2014
 		 */
 		public static void Main (string [] args)
 		{
@@ -1288,20 +1156,6 @@ namespace CSharpSimulation
 
 			long numberOfSimulations = 10000000L;
 			long progressPrintOnIteration = 10000000L;
-			/*
-			view = new int[][]{
-				new int[]{ 3, 11, 3 },
-				new int[]{ 4, 12, 4 },
-				new int[]{ 5, 8, 5 },
-				new int[]{ 6, 12, 6 },
-				new int[]{ 7, 9, 7 },
-			};
-			Console.WriteLine(linesWin (view));
-			Console.WriteLine(scatterWin (view));
-			printView ();
-			Console.ReadLine ();
-			return;
-			/**/
 
 			/* Parse command line arguments. */
 			for (int a = 0; a < args.Length; a++) {
